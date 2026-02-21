@@ -150,12 +150,10 @@ function Set-PSADTInstallCommand {
 
     $Extension = [System.IO.Path]::GetExtension($InstallerName).ToLower()
     
-    $InstallCommand = ""
-    if ($Extension -eq ".msi") {
-        $InstallCommand = "Start-ADTMsiProcess -FilePath `"`$PSScriptRoot\Files\$InstallerName`" -Action Install"
+    $InstallCommand = if ($Extension -eq ".msi") {
+        'Start-ADTMsiProcess -FilePath "$PSScriptRoot\Files\{0}" -Action Install' -f $InstallerName
     } else {
-        # Default for EXE/others - assuming silent flags.
-        $InstallCommand = "Start-ADTProcess -FilePath `"`$PSScriptRoot\Files\$InstallerName`" -Arguments `"/silent /norestart`""
+        'Start-ADTProcess -FilePath "$PSScriptRoot\Files\{0}" -Arguments "/silent /norestart"' -f $InstallerName
     }
 
     Write-Verbose "Injecting install command for '$InstallerName' into '$ScriptFile'..."
