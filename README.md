@@ -73,6 +73,7 @@ Run the main synchronization script from an elevated PowerShell prompt:
 - `-ConfigFile`: Path to your JSON manifest (Default: `EvergreenLibrary.json`).
 - `-LogFile`: Path to the CSV log file (Default: `EvergreenSyncLog.csv`).
 - `-AppName`: (Optional) Limit the sync to a single application by name.
+- `-StopAtPhase`: (Optional) Stop the pipeline after a specific phase. Valid values: `Download`, `PSADT`, `IntuneWin` (Default).
 
 ## 📁 Project Structure
 

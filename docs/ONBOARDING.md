@@ -61,6 +61,15 @@ Finally, use `Add-EvergreenLibraryApp.ps1` to register the application. It autom
 
 ---
 
+## Controlling the Pipeline
+
+By default, the sync script performs the full end-to-end process. You can use the `-StopAtPhase` parameter to stop earlier if you only want to download installers or create PSADT packages without converting them to Intune.
+
+- **Download only:** `.\Invoke-EvergreenLibrarySync.ps1 -StopAtPhase Download`
+- **Download & PSADT only:** `.\Invoke-EvergreenLibrarySync.ps1 -StopAtPhase PSADT`
+
+---
+
 ## Common Filter Examples
 
 | Scenario | Filter Pattern |
