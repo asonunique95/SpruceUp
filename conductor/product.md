@@ -16,6 +16,7 @@ The project aims to develop a PowerShell-based automation tool that leverages th
 
 ## Key Features
 - **Version Tracking:** Continuously monitor for new application versions and automatically initiate downloads.
+- **Streamlined Onboarding:** Specialized helper scripts and documentation to simplify adding new applications to the library.
 - **Multi-Publisher Support:** Comprehensive support for major publishers, including Microsoft, Google, Adobe, and others.
 - **Storage Management:** Intelligent organization of installers and automatic cleanup of legacy versions to optimize local storage.
 
