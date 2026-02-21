@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Add pipeline control parameters to Invoke-EvergreenLibrarySync.ps1**
+- [x] **Track: Add pipeline control parameters to Invoke-EvergreenLibrarySync.ps1**
   *Link: [./tracks/pipeline_control_20260221/](./tracks/pipeline_control_20260221/)*
