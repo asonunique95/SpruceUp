@@ -24,11 +24,13 @@ if (-not (Get-Module -Name "Evergreen")) { Import-Module -Name "Evergreen" }
 $ScriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 . (Join-Path $ScriptPath "Scripts\LibraryFunctions.ps1")
 . (Join-Path $ScriptPath "Scripts\PSADTFunctions.ps1")
+. (Join-Path $ScriptPath "Scripts\IntuneWinFunctions.ps1")
 
 # 2. Setup Paths
 $FullConfigPath = Join-Path $LibraryPath $ConfigFile
 $FullLogPath = Join-Path $LibraryPath $LogFile
 $PackagesPath = Join-Path $LibraryPath "Packages"
+$IntuneWinPath = Join-Path $PackagesPath "IntuneWin"
 
 # 3. Load Manifest
 try {
@@ -73,8 +75,32 @@ foreach ($App in $Apps) {
                     Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName (Split-Path $SyncResult.Path -Leaf) -Verbose:$VerbosePreference | Out-Null
                     
                     Write-Host "Done." -ForegroundColor DarkGreen
-                    $Status = "Success"
-                    $Message = "New version downloaded and PSADT package created: $PackageName"
+
+                    # --- INTUNEWIN CONVERSION ---
+                    Write-Host "  -> Converting to .intunewin... " -NoNewline
+                    try {
+                        $IntuneWinFile = New-IntuneWinPackage -SourceFolder $PackageFolder `
+                                                             -SetupFile "Invoke-AppDeployToolkit.exe" `
+                                                             -OutputFolder $IntuneWinPath `
+                                                             -Verbose:$VerbosePreference
+                        
+                        if ($IntuneWinFile) {
+                            Write-Host "Done." -ForegroundColor DarkGreen
+                            $Status = "Success"
+                            $Message = "New version downloaded, PSADT package created, and converted to .intunewin: $(Split-Path $IntuneWinFile -Leaf)"
+                        } else {
+                            Write-Host "Failed (Tool Error)!" -ForegroundColor Red
+                            $Status = "Partial Success"
+                            $Message = "New version downloaded and PSADT created, but .intunewin conversion failed."
+                        }
+                    }
+                    catch {
+                        Write-Host "Failed!" -ForegroundColor Red
+                        Write-Host "     -> $($_.Exception.Message)" -ForegroundColor Red
+                        $Status = "Partial Success"
+                        $Message = "New version downloaded and PSADT created, but .intunewin conversion errored: $($_.Exception.Message)"
+                    }
+                    # ----------------------------
                 }
                 catch {
                     Write-Host "Failed!" -ForegroundColor Red
