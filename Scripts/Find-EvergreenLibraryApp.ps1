@@ -13,10 +13,25 @@ if (-not (Get-Module -Name "Evergreen")) { Import-Module -Name "Evergreen" }
 
 # 2. Search for the app
 Write-Verbose "Searching for '$Name' in Evergreen module..."
-$Apps = Find-EvergreenApp -Name "*$Name*"
+$Apps = $null
+
+try {
+    # Attempt 1: Wildcard search
+    $Apps = Find-EvergreenApp -Name "*$Name*" -ErrorAction SilentlyContinue
+    
+    # Attempt 2: If no results, try literal search
+    if (-not $Apps) {
+        $Apps = Find-EvergreenApp -Name $Name -ErrorAction SilentlyContinue
+    }
+}
+catch {
+    Write-Error "An error occurred while searching for '$Name': $($_.Exception.Message)"
+    return
+}
 
 if (-not $Apps) {
-    Write-Warning "No applications found matching '$Name'."
+    Write-Warning "No applications found matching '$Name' in the Evergreen module."
+    Write-Host "Try a broader search term or check the available apps at https://steve0hun.github.io/Evergreen/apps/" -ForegroundColor Gray
     return
 }
 
@@ -25,18 +40,24 @@ Write-Host "`nMatches found in Evergreen:" -ForegroundColor Cyan
 $Apps | Select-Object Name, Description | Format-Table -AutoSize
 
 # 4. If a single match is found, show detailed metadata schema
-if ($Apps.Count -eq 1) {
-    $AppName = $Apps[0].Name
-    Write-Host "`nRetrieving detailed metadata for '$AppName' to show available filters..." -ForegroundColor Cyan
-    $Metadata = Get-EvergreenApp -Name $AppName
+if ($Apps.Count -eq 1 -or ($null -ne $Apps -and $Apps.GetType().Name -notlike "*[]")) {
+    $AppName = if ($Apps.Count -eq 1) { $Apps[0].Name } else { $Apps.Name }
     
-    if ($Metadata) {
-        Write-Host "Available Properties for Filtering (showing sample from first record):" -ForegroundColor Gray
-        $Sample = $Metadata | Select-Object -First 1
-        $Sample | Get-Member -MemberType NoteProperty | Select-Object Name, Definition | Format-Table -AutoSize
+    Write-Host "`nRetrieving detailed metadata for '$AppName' to show available filters..." -ForegroundColor Cyan
+    try {
+        $Metadata = Get-EvergreenApp -Name $AppName -ErrorAction Stop
         
-        Write-Host "Sample Data:" -ForegroundColor Gray
-        $Sample | Format-List *
+        if ($Metadata) {
+            Write-Host "Available Properties for Filtering (showing sample from first record):" -ForegroundColor Gray
+            $Sample = $Metadata | Select-Object -First 1
+            $Sample | Get-Member -MemberType NoteProperty | Select-Object Name, Definition | Format-Table -AutoSize
+            
+            Write-Host "Sample Data Summary:" -ForegroundColor Gray
+            $Sample | Format-List *
+        }
+    }
+    catch {
+        Write-Warning "Could not retrieve detailed metadata for '$AppName': $($_.Exception.Message)"
     }
 }
 elseif ($Apps.Count -gt 1) {
