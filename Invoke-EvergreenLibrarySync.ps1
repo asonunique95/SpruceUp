@@ -10,7 +10,11 @@ param (
     [string]$LogFile = "EvergreenSyncLog.csv",
 
     [Parameter(Mandatory = $false)]
-    [string]$AppName
+    [string]$AppName,
+
+    [Parameter(Mandatory = $false)]
+    [ValidateSet("Download", "PSADT", "IntuneWin")]
+    [string]$StopAtPhase = "IntuneWin"
 )
 
 # 1. Dependency Checks & Function Import
@@ -71,53 +75,66 @@ foreach ($App in $Apps) {
             if ($SyncResult.NewDownload) {
                 Write-Host "New version (v$($SyncResult.Version)) downloaded." -ForegroundColor Green
                 
-                # --- PSADT PACKAGING ---
-                Write-Host "  -> Creating PSADT package... " -NoNewline
-                try {
-                    $PackageName = Get-PSADTPackageName -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture
-                    $PackageFolder = Join-Path $PackagesPath $PackageName
-                    
-                    Copy-PSADTTemplate -DestinationPath $PackageFolder -Verbose:$VerbosePreference | Out-Null
-                    Stage-PSADTInstaller -InstallerPath $SyncResult.Path -DestinationPackagePath $PackageFolder -Verbose:$VerbosePreference | Out-Null
-                    Set-PSADTAppHeader -PackagePath $PackageFolder -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture -Verbose:$VerbosePreference | Out-Null
-                    Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName (Split-Path $SyncResult.Path -Leaf) -Verbose:$VerbosePreference | Out-Null
-                    
-                    Write-Host "Done." -ForegroundColor DarkGreen
+                $Status = "Success"
+                $Message = "New version downloaded"
 
-                    # --- INTUNEWIN CONVERSION ---
-                    Write-Host "  -> Converting to .intunewin... " -NoNewline
+                if ($StopAtPhase -eq "Download") {
+                    Write-Host "  -> Stopping at Download phase as requested." -ForegroundColor Gray
+                }
+                else {
+                    # --- PSADT PACKAGING ---
+                    Write-Host "  -> Creating PSADT package... " -NoNewline
                     try {
-                        $IntuneWinFile = New-IntuneWinPackage -SourceFolder $PackageFolder `
-                                                             -SetupFile "Invoke-AppDeployToolkit.exe" `
-                                                             -OutputFolder $IntuneWinPath `
-                                                             -OutputFileName $PackageName `
-                                                             -Verbose:$VerbosePreference
+                        $PackageName = Get-PSADTPackageName -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture
+                        $PackageFolder = Join-Path $PackagesPath $PackageName
                         
-                        if ($IntuneWinFile) {
-                            Write-Host "Done." -ForegroundColor DarkGreen
-                            $Status = "Success"
-                            $Message = "New version downloaded, PSADT package created, and converted to .intunewin: $(Split-Path $IntuneWinFile -Leaf)"
-                        } else {
-                            Write-Host "Failed (Tool Error)!" -ForegroundColor Red
-                            $Status = "Partial Success"
-                            $Message = "New version downloaded and PSADT created, but .intunewin conversion failed."
+                        Copy-PSADTTemplate -DestinationPath $PackageFolder -Verbose:$VerbosePreference | Out-Null
+                        Stage-PSADTInstaller -InstallerPath $SyncResult.Path -DestinationPackagePath $PackageFolder -Verbose:$VerbosePreference | Out-Null
+                        Set-PSADTAppHeader -PackagePath $PackageFolder -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture -Verbose:$VerbosePreference | Out-Null
+                        Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName (Split-Path $SyncResult.Path -Leaf) -Verbose:$VerbosePreference | Out-Null
+                        
+                        Write-Host "Done." -ForegroundColor DarkGreen
+                        $Message = "New version downloaded and PSADT package created: $PackageName"
+
+                        if ($StopAtPhase -eq "PSADT") {
+                            Write-Host "  -> Stopping at PSADT phase as requested." -ForegroundColor Gray
+                        }
+                        else {
+                            # --- INTUNEWIN CONVERSION ---
+                            Write-Host "  -> Converting to .intunewin... " -NoNewline
+                            try {
+                                $IntuneWinFile = New-IntuneWinPackage -SourceFolder $PackageFolder `
+                                                                     -SetupFile "Invoke-AppDeployToolkit.exe" `
+                                                                     -OutputFolder $IntuneWinPath `
+                                                                     -OutputFileName $PackageName `
+                                                                     -Verbose:$VerbosePreference
+                                
+                                if ($IntuneWinFile) {
+                                    Write-Host "Done." -ForegroundColor DarkGreen
+                                    $Message = "New version downloaded, PSADT package created, and converted to .intunewin: $(Split-Path $IntuneWinFile -Leaf)"
+                                } else {
+                                    Write-Host "Failed (Tool Error)!" -ForegroundColor Red
+                                    $Status = "Partial Success"
+                                    $Message = "New version downloaded and PSADT created, but .intunewin conversion failed."
+                                }
+                            }
+                            catch {
+                                Write-Host "Failed!" -ForegroundColor Red
+                                Write-Host "     -> $($_.Exception.Message)" -ForegroundColor Red
+                                $Status = "Partial Success"
+                                $Message = "New version downloaded and PSADT created, but .intunewin conversion errored: $($_.Exception.Message)"
+                            }
+                            # ----------------------------
                         }
                     }
                     catch {
                         Write-Host "Failed!" -ForegroundColor Red
                         Write-Host "     -> $($_.Exception.Message)" -ForegroundColor Red
                         $Status = "Partial Success"
-                        $Message = "New version downloaded and PSADT created, but .intunewin conversion errored: $($_.Exception.Message)"
+                        $Message = "New version downloaded but PSADT packaging failed: $($_.Exception.Message)"
                     }
-                    # ----------------------------
+                    # -----------------------
                 }
-                catch {
-                    Write-Host "Failed!" -ForegroundColor Red
-                    Write-Host "     -> $($_.Exception.Message)" -ForegroundColor Red
-                    $Status = "Partial Success"
-                    $Message = "New version downloaded but PSADT packaging failed: $($_.Exception.Message)"
-                }
-                # -----------------------
             }
             else {
                 Write-Host "Up to date (v$($SyncResult.Version))." -ForegroundColor Gray
