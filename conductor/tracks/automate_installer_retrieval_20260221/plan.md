@@ -1,19 +1,19 @@
 # Implementation Plan - Automate Installer Retrieval
 
-## Phase 1: Core Automation Logic
-- [ ] **Task: Implement Library Configuration Parsing**
-    - [ ] Write Tests: Verify `EvergreenLibrary.json` can be loaded and its app list extracted.
-    - [ ] Implement Feature: Create a function `Get-EvergreenLibraryApps` to parse the manifest.
-- [ ] **Task: Implement Version Discovery & Comparison**
-    - [ ] Write Tests: Mock `Get-EvergreenApp` and verify the logic for identifying new versions.
-    - [ ] Implement Feature: Create `Get-LatestEvergreenAppVersion` to compare local vs. available versions.
-- [ ] **Task: Implement Structured Download & Organization**
-    - [ ] Write Tests: Verify `Save-EvergreenApp` is called with the correct parameters for publisher-based paths.
-    - [ ] Implement Feature: Create `Sync-EvergreenLibraryApp` to perform the actual download and folder creation.
-- [ ] **Task: Implement Centralized Logging**
-    - [ ] Write Tests: Verify logs are appended to the CSV file with correct timestamps and status.
-    - [ ] Implement Feature: Create `Write-EvergreenSyncLog` for consistent tracking.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1: Core Automation Logic' (Protocol in workflow.md)**
+## Phase 1: Core Automation Logic [checkpoint: 89bbadc]
+- [x] **Task: Implement Library Configuration Parsing** 89bbadc
+    - [x] Write Tests: Verify `EvergreenLibrary.json` can be loaded and its app list extracted. 89bbadc
+    - [x] Implement Feature: Create a function `Get-EvergreenLibraryApps` to parse the manifest. 89bbadc
+- [x] **Task: Implement Version Discovery & Comparison** 89bbadc
+    - [x] Write Tests: Mock `Get-EvergreenApp` and verify the logic for identifying new versions. 89bbadc
+    - [x] Implement Feature: Create `Get-LatestEvergreenAppVersion` to compare local vs. available versions. 89bbadc
+- [x] **Task: Implement Structured Download & Organization** 89bbadc
+    - [x] Write Tests: Verify `Save-EvergreenApp` is called with the correct parameters for publisher-based paths. 89bbadc
+    - [x] Implement Feature: Create `Sync-EvergreenLibraryApp` to perform the actual download and folder creation. 89bbadc
+- [x] **Task: Implement Centralized Logging** 89bbadc
+    - [x] Write Tests: Verify logs are appended to the CSV file with correct timestamps and status. 89bbadc
+    - [x] Implement Feature: Create `Write-EvergreenSyncLog` for consistent tracking. 89bbadc
+- [x] **Task: Conductor - User Manual Verification 'Phase 1: Core Automation Logic' (Protocol in workflow.md)** 89bbadc
 
 ## Phase 2: Error Handling & Resilience
 - [ ] **Task: Implement Retry Logic for Downloads**
