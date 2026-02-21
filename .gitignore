@@ -5,12 +5,16 @@
 !EvergreenLibrary.json
 !DeploymentConfig.json
 !Sync-Evergreen.ps1
+!Invoke-EvergreenLibrarySync.ps1
 !Evergreen-Research.md
+!README.md
 !.gitignore
 !*.html
 !*.py
 !Scripts/
 !Scripts/*.ps1
+!conductor/
+!Tests/
 
 # Keep folders but ignore contents
 !*/
