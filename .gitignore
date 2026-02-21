@@ -3,6 +3,7 @@
 
 # But allow these specific files/patterns
 !EvergreenLibrary.json
+!DeploymentConfig.json
 !Sync-Evergreen.ps1
 !Evergreen-Research.md
 !.gitignore

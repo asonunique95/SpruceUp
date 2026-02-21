@@ -1,0 +1,37 @@
+{
+    "MicrosoftEdge": {
+        "Vendor": "Microsoft",
+        "InstallArguments": "/qn /norestart",
+        "ProcessesToClose": ["msedge"]
+    },
+    "GoogleChrome": {
+        "Vendor": "Google",
+        "InstallArguments": "/qn /norestart",
+        "ProcessesToClose": ["chrome"]
+    },
+    "7Zip": {
+        "Vendor": "Igor Pavlov",
+        "InstallArguments": "/qn /norestart",
+        "ProcessesToClose": ["7zFM", "7zG"]
+    },
+    "Git": {
+        "Vendor": "Git Team",
+        "InstallArguments": "/VERYSILENT /NORESTART /NOCANCEL /LOADINF=git_options.ini",
+        "ProcessesToClose": ["git", "git-bash", "git-gui"]
+    },
+    "VSCode": {
+        "Vendor": "Microsoft",
+        "InstallArguments": "/VERYSILENT /NORESTART /MERGETASKS=!runcode",
+        "ProcessesToClose": ["Code"]
+    },
+    "PuTTY": {
+        "Vendor": "Simon Tatham",
+        "InstallArguments": "/qn /norestart",
+        "ProcessesToClose": ["putty", "pageant", "pscp"]
+    },
+    "NotepadPlusPlus": {
+        "Vendor": "Notepad++ Team",
+        "InstallArguments": "/S",
+        "ProcessesToClose": ["notepad++"]
+    }
+}

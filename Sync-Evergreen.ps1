@@ -1,49 +1,38 @@
 $LibraryPath = "C:\Evergreen"
 $ConfigFile = Join-Path $LibraryPath "EvergreenLibrary.json"
+$DeployConfigFile = Join-Path $LibraryPath "DeploymentConfig.json"
 $LogFile = Join-Path $LibraryPath "EvergreenSyncLog.csv"
+$ToolkitSource = "C:\Evergreen\PsApps\Temp\PSAppDeployToolkit"
+$TemplateFile = "C:\Evergreen\PsApps\Temp\Invoke-AppDeployToolkit.ps1"
+$PackagesPath = Join-Path $LibraryPath "Packages"
 
-# 1. Check for Evergreen Module
+# 1. Dependency Checks
 if (-not (Get-Module -ListAvailable -Name "Evergreen")) {
-    Write-Error "The 'Evergreen' module is not installed. Please run: Install-Module -Name Evergreen -Scope CurrentUser"
+    Write-Error "The 'Evergreen' module is not installed."
     return
 }
+if (-not (Get-Module -Name "Evergreen")) { Import-Module -Name "Evergreen" }
+if (-not (Test-Path $ConfigFile)) { Write-Error "Missing $ConfigFile"; return }
 
-if (-not (Get-Module -Name "Evergreen")) {
-    Write-Host "Importing Evergreen module..." -ForegroundColor Gray
-    Import-Module -Name "Evergreen"
-}
-
-# 2. Check for Configuration
-if (-not (Test-Path $ConfigFile)) {
-    Write-Error "Could not find EvergreenLibrary.json at $ConfigFile"
-    return
-}
-
-# 3. Load the configuration
+# 2. Load Configurations
 $Config = Get-Content $ConfigFile | ConvertFrom-Json
+$DeployConfig = if (Test-Path $DeployConfigFile) { Get-Content $DeployConfigFile | ConvertFrom-Json } else { $null }
 $Apps = $Config.Applications
 $Total = $Apps.Count
 $Index = 0
 $Results = @()
 
-Write-Host "`nStarting Evergreen Library Update for $Total applications..." -ForegroundColor Cyan
+Write-Host "`nStarting Evergreen Sync & PSADT Packaging..." -ForegroundColor Cyan
 
 foreach ($App in $Apps) {
     $Index++
-    
-    Write-Progress -Activity "Evergreen Library Sync" `
-                   -Status "Checking: $($App.Name) ($Index of $Total)" `
-                   -PercentComplete (($Index / $Total) * 100)
+    Write-Progress -Activity "Evergreen Sync & Package" -Status "Processing: $($App.Name)" -PercentComplete (($Index / $Total) * 100)
 
     try {
         Write-Host "Syncing $($App.Name)... " -NoNewline -ForegroundColor White
-        
-        # Suppress internal module warnings
         $AppDetails = Get-EvergreenApp -Name $App.EvergreenApp -WarningAction SilentlyContinue
-        
         $FilterScript = [scriptblock]::Create($App.Filter)
         
-        # Filter, then sort by version descending and pick the latest one only
         $FilteredApp = $AppDetails | Where-Object {
             $inputObject = $_
             & $FilterScript
@@ -55,75 +44,63 @@ foreach ($App in $Apps) {
             
             if ($null -ne $SavedFiles) {
                 Write-Host "Done (v$($FilteredApp.Version))." -ForegroundColor Green
+                
                 foreach ($File in $SavedFiles) {
                     $PathToLog = if ($File.Path) { $File.Path } else { $File.ToString() }
-                    
                     if (Test-Path $PathToLog) {
                         $FileInfo = Get-Item $PathToLog
-                        $FileName = $FileInfo.Name
-                        $SizeMB = [math]::Round($FileInfo.Length / 1MB, 2)
                         
-                        Write-Host "  -> Saved: $FileName ($($SizeMB)MB)" -ForegroundColor DarkGreen
+                        # Prepare Package Folder
+                        $VersionClean = $FilteredApp.Version -replace '[^0-9.]', ''
+                        $PackageName = "$($App.Vendor)_$($App.Name)_$($VersionClean)_01" -replace ' ', ''
+                        $CurrentPackagePath = Join-Path $PackagesPath $PackageName
                         
+                        if (-not (Test-Path $CurrentPackagePath)) {
+                            Write-Host "  -> Creating PSADT Package: $PackageName" -ForegroundColor Cyan
+                            
+                            # CREATE DIRECTORIES FIRST
+                            $FilesDir = Join-Path $CurrentPackagePath "Files"
+                            New-Item -Path $FilesDir -ItemType Directory -Force | Out-Null
+                            
+                            # Copy Toolkit Core
+                            Copy-Item -Path $ToolkitSource -Destination $CurrentPackagePath -Recurse -Force
+                            
+                            # COPY INSTALLER INTO FILES SUBDIR
+                            Copy-Item -Path $PathToLog -Destination $FilesDir -Force
+                            
+                            # Customize Invoke-AppDeployToolkit.ps1
+                            $ScriptContent = Get-Content $TemplateFile -Raw
+                            $ScriptContent = $ScriptContent -replace "AppVendor = ''", "AppVendor = '$($App.Vendor)'"
+                            $ScriptContent = $ScriptContent -replace "AppName = ''", "AppName = '$($App.Name)'"
+                            $ScriptContent = $ScriptContent -replace "AppVersion = ''", "AppVersion = '$($FilteredApp.Version)'"
+                            $ScriptContent = $ScriptContent -replace "AppArch = ''", "AppArch = '$($FilteredApp.Architecture)'"
+                            $ScriptContent = $ScriptContent -replace "AppScriptAuthor = '<author name>'", "AppScriptAuthor = 'Maldino Nikaj'"
+                            $ScriptContent = $ScriptContent -replace "AppScriptDate = '.*'", "AppScriptDate = '$(Get-Date -Format 'yyyy-MM-dd')'"
+                            
+                            # Handle ProcessesToClose from DeploymentConfig.json if available
+                            if ($DeployConfig -and $DeployConfig.$($App.Name).ProcessesToClose) {
+                                $ProcList = "@('" + ($DeployConfig.$($App.Name).ProcessesToClose -join "', '") + "')"
+                                $ScriptContent = $ScriptContent -replace "AppProcessesToClose = @\(\)", "AppProcessesToClose = $ProcList"
+                            }
+                            
+                            $ScriptContent | Set-Content -Path (Join-Path $CurrentPackagePath "Invoke-AppDeployToolkit.ps1") -Force
+                        }
+
                         $Results += [PSCustomObject]@{
-                            Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-                            AppName   = $App.Name
-                            Status    = "Success"
-                            FileName  = $FileName
-                            SizeMB    = $SizeMB
-                            Path      = $PathToLog
-                            Message   = "v$($FilteredApp.Version) synced successfully"
+                            Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; AppName = $App.Name; Status = "Success"
+                            FileName = $FileInfo.Name; Path = $PathToLog; Message = "Packaged v$($FilteredApp.Version)"
                         }
                     }
                 }
             } else {
                 Write-Host "Up to date." -ForegroundColor Gray
-                $Results += [PSCustomObject]@{
-                    Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-                    AppName   = $App.Name
-                    Status    = "Skipped"
-                    FileName  = "Existing"
-                    SizeMB    = 0
-                    Path      = "N/A"
-                    Message   = "v$($FilteredApp.Version) is already up to date"
-                }
-            }
-        } else {
-            Write-Host "Filtered." -ForegroundColor Yellow
-            $Results += [PSCustomObject]@{
-                Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-                AppName   = $App.Name
-                Status    = "Warning"
-                FileName  = "N/A"
-                SizeMB    = 0
-                Path      = "N/A"
-                Message   = "No version found matching filter"
             }
         }
     }
     catch {
         Write-Host "Error!" -ForegroundColor Red
         Write-Host "[ERROR] $($_.Exception.Message)" -ForegroundColor Red
-        $Results += [PSCustomObject]@{
-            Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            AppName   = $App.Name
-            Status    = "Error"
-            FileName  = "N/A"
-            SizeMB    = 0
-            Path      = "N/A"
-            Message   = $_.Exception.Message
-        }
     }
 }
 
-# Export results to CSV
-if ($Results.Count -gt 0) {
-    if (Test-Path $LogFile) {
-        $Results | Export-Csv -Path $LogFile -Append -NoTypeInformation
-    } else {
-        $Results | Export-Csv -Path $LogFile -NoTypeInformation
-    }
-}
-
-Write-Progress -Activity "Evergreen Library Sync" -Completed
-Write-Host "`nSync Complete! Log saved to: $LogFile" -ForegroundColor Green
+Write-Host "`nAll apps processed. Packages in: $PackagesPath" -ForegroundColor Green
