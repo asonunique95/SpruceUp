@@ -13,9 +13,9 @@
     - [x] Implement Feature: Add a "Matched Metadata Summary" that shows Vendor/Publisher and other key fields from the first result. f1b864b
 - [x] **Task: Conductor - User Manual Verification 'Phase 2: Enhanced Metadata Visibility' (Protocol in workflow.md)** 3a9e296
 
-## Phase 3: Final Polishing & Documentation
-- [ ] **Task: Update Add-EvergreenLibraryApp.ps1**
-    - [ ] Implement Feature: Improve error handling and duplicate checking feedback.
-- [ ] **Task: Update Onboarding Guide**
-    - [ ] Implement Feature: Update `docs/ONBOARDING.md` with the new script behaviors and better examples.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 3: Final Polishing & Documentation' (Protocol in workflow.md)**
+## Phase 3: Final Polishing & Documentation [checkpoint: 9eb3b2e]
+- [x] **Task: Update Add-EvergreenLibraryApp.ps1** a480686
+    - [x] Implement Feature: Improve error handling and duplicate checking feedback. a480686
+- [x] **Task: Update Onboarding Guide** a480686
+    - [x] Implement Feature: Update `docs/ONBOARDING.md` with the new script behaviors and better examples. a480686
+- [x] **Task: Conductor - User Manual Verification 'Phase 3: Final Polishing & Documentation' (Protocol in workflow.md)** 9eb3b2e
