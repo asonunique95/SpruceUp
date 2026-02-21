@@ -33,6 +33,8 @@ function New-IntuneWinPackage {
         [Parameter(Mandatory = $true)]
         [string]$OutputFolder,
         [Parameter(Mandatory = $false)]
+        [string]$OutputFileName,
+        [Parameter(Mandatory = $false)]
         [string]$ToolPath = "Tools\IntuneWinAppUtil.exe"
     )
 
@@ -63,15 +65,24 @@ function New-IntuneWinPackage {
     try {
         $Process = Start-Process -FilePath $ExePath -ArgumentList $Args -Wait -NoNewWindow -PassThru -ErrorAction Stop
         if ($Process.ExitCode -eq 0) {
-            # Find the generated file to return its path
-            $ExpectedFileName = [System.IO.Path]::ChangeExtension($SetupFile, ".intunewin")
-            # Note: IntuneWinAppUtil usually names it after the setup file, but sometimes after the folder?
-            # Actually it's always <setupfile_base>.intunewin
+            # IntuneWinAppUtil always names it after the setup file: <setupfile_base>.intunewin
+            $DefaultGeneratedFileName = [System.IO.Path]::ChangeExtension($SetupFile, ".intunewin")
+            $GeneratedFilePath = Join-Path $FullOutput $DefaultGeneratedFileName
             
-            $GeneratedFile = Get-ChildItem -Path $FullOutput -Filter "*.intunewin" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-            
-            Write-Verbose "Successfully created .intunewin package: $($GeneratedFile.FullName)"
-            return $GeneratedFile.FullName
+            # If a custom name is requested, rename the file
+            if (-not [string]::IsNullOrWhiteSpace($OutputFileName)) {
+                if ($OutputFileName -notlike "*.intunewin") { $OutputFileName += ".intunewin" }
+                $NewFilePath = Join-Path $FullOutput $OutputFileName
+                
+                if (Test-Path $GeneratedFilePath) {
+                    Write-Verbose "Renaming '$DefaultGeneratedFileName' to '$OutputFileName'..."
+                    Move-Item -Path $GeneratedFilePath -Destination $NewFilePath -Force
+                    $GeneratedFilePath = $NewFilePath
+                }
+            }
+
+            Write-Verbose "Successfully created .intunewin package: $GeneratedFilePath"
+            return $GeneratedFilePath
         } else {
             Write-Error "IntuneWinAppUtil failed with exit code $($Process.ExitCode)."
             return $false

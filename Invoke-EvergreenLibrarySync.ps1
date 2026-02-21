@@ -82,6 +82,7 @@ foreach ($App in $Apps) {
                         $IntuneWinFile = New-IntuneWinPackage -SourceFolder $PackageFolder `
                                                              -SetupFile "Invoke-AppDeployToolkit.exe" `
                                                              -OutputFolder $IntuneWinPath `
+                                                             -OutputFileName $PackageName `
                                                              -Verbose:$VerbosePreference
                         
                         if ($IntuneWinFile) {
