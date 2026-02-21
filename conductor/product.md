@@ -18,7 +18,7 @@ The project aims to develop a PowerShell-based automation tool that leverages th
 - **Version Tracking:** Continuously monitor for new application versions and automatically initiate downloads.
 - **Streamlined Onboarding:** Specialized helper scripts and documentation to simplify adding new applications to the library.
 - **Multi-Publisher Support:** Comprehensive support for major publishers, including Microsoft, Google, Adobe, and others.
-- **Storage Management:** Intelligent organization of installers and automatic cleanup of legacy versions to optimize local storage.
+- **Storage Management:** Intelligent organization of installers into a dedicated `Installers/` subfolder and automatic cleanup of legacy versions to optimize local storage.
 
 ## Integration Strategy
 - **Stage 1 (Completed):** Standalone automated flow for discovery, download, and organization based on `EvergreenLibrary.json`.
