@@ -1,0 +1,74 @@
+{
+    "Applications": [
+        {
+            "Name": "MicrosoftEdge",
+            "EvergreenApp": "MicrosoftEdge",
+            "Filter": "$_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
+        },
+        {
+            "Name": "GoogleChrome",
+            "EvergreenApp": "GoogleChrome",
+            "Filter": "$_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
+        },
+        {
+            "Name": "7Zip",
+            "EvergreenApp": "7Zip",
+            "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
+        },
+        {
+            "Name": "NotepadPlusPlus",
+            "EvergreenApp": "NotepadPlusPlus",
+            "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
+        },
+        {
+            "Name": "WinSCP",
+            "EvergreenApp": "WinSCP",
+            "Filter": "$_.Architecture -eq 'x86'"
+        },
+        {
+            "Name": "PuTTY",
+            "EvergreenApp": "PuTTY",
+            "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
+        },
+        {
+            "Name": "Wireshark",
+            "EvergreenApp": "Wireshark",
+            "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
+        },
+        {
+            "Name": "VSCode",
+            "EvergreenApp": "MicrosoftVisualStudioCode",
+            "Filter": "$_.Architecture -eq 'x64'"
+        },
+        {
+            "Name": "WinDirStat",
+            "EvergreenApp": "WinDirStat",
+            "Filter": "$_.Architecture -eq 'x86'"
+        },
+        {
+            "Name": "SpyderIDE",
+            "EvergreenApp": "SpyderIDE",
+            "Filter": "$_.Architecture -eq 'x64'"
+        },
+        {
+            "Name": "Python",
+            "EvergreenApp": "Python",
+            "Filter": "$_.Architecture -eq 'x64'"
+        },
+        {
+            "Name": "PyCharm",
+            "EvergreenApp": "JetBrainsPyCharm",
+            "Filter": "$_.Architecture -eq 'x64'"
+        },
+        {
+            "Name": "Git",
+            "EvergreenApp": "GitForWindows",
+            "Filter": "$_.Architecture -eq 'x64'"
+        },
+        {
+            "Name": "AdobeAcrobatPro",
+            "EvergreenApp": "AdobeAcrobatProStdDC",
+            "Filter": "$_.Architecture -eq 'x64'"
+        }
+    ]
+}

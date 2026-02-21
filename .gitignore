@@ -1,0 +1,24 @@
+# Ignore large installer files
+Apps/
+MicrosoftEdge/
+GoogleChrome/
+7Zip/
+NotepadPlusPlus/
+WinSCP/
+PuTTY/
+Wireshark/
+VSCode/
+WinDirStat/
+SpyderIDE/
+Python/
+PyCharm/
+Git/
+AdobeAcrobatPro/
+
+# Ignore log files
+*.csv
+*.log
+
+# Ignore OS files
+Thumbs.db
+.DS_Store
