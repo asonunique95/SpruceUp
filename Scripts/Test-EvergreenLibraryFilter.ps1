@@ -13,7 +13,14 @@ if (-not (Get-Module -Name "Evergreen")) { Import-Module -Name "Evergreen" }
 
 # 2. Fetch all metadata for the app
 Write-Host "Fetching all metadata for '$EvergreenApp'..." -ForegroundColor Cyan
-$AllMetadata = Get-EvergreenApp -Name $EvergreenApp
+$AllMetadata = $null
+try {
+    $AllMetadata = Get-EvergreenApp -Name $EvergreenApp -ErrorAction Stop
+}
+catch {
+    Write-Error "Failed to retrieve metadata for '$EvergreenApp': $($_.Exception.Message)"
+    return
+}
 
 if (-not $AllMetadata) {
     Write-Error "No metadata found for '$EvergreenApp'."
@@ -39,12 +46,26 @@ while ($true) {
     }
 
     try {
-        $FilterScript = [scriptblock]::Create($FilterInput)
         $Results = $AllMetadata | Where-Object { Invoke-Expression -Command $FilterInput }
         
         if ($Results) {
             Write-Host "`nMatches found ($($Results.Count)):" -ForegroundColor Green
-            $Results | Select-Object Channel, Version, Architecture, Type | Format-Table -AutoSize
+            
+            # Display dynamic columns based on what's available
+            $Columns = @('Channel', 'Version', 'Architecture', 'Type', 'Language', 'Release') | Where-Object { $Results[0].$_ }
+            $Results | Select-Object $Columns | Format-Table -AutoSize
+            
+            # Matched Metadata Summary (for Add-EvergreenLibraryApp.ps1)
+            Write-Host "`nMatched Metadata Summary (for registration):" -ForegroundColor Cyan
+            $Sample = $Results | Select-Object -First 1
+            $Summary = [PSCustomObject]@{
+                EvergreenApp = $EvergreenApp
+                Vendor       = if ($Sample.Publisher) { $Sample.Publisher } elseif ($Sample.Vendor) { $Sample.Vendor } else { "<Unknown>" }
+                SampleName   = $Sample.Name
+                Filter       = $FilterInput
+            }
+            $Summary | Format-List
+            
             $FinalFilter = $FilterInput
         }
         else {
