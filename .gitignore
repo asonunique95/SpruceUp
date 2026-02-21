@@ -9,6 +9,8 @@
 !.gitignore
 !*.html
 !*.py
+!Scripts/
+!Scripts/*.ps1
 
 # Keep folders but ignore contents
 !*/

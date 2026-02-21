@@ -7,10 +7,7 @@ $TemplateFile = "C:\Evergreen\PsApps\Temp\Invoke-AppDeployToolkit.ps1"
 $PackagesPath = Join-Path $LibraryPath "Packages"
 
 # 1. Dependency Checks
-if (-not (Get-Module -ListAvailable -Name "Evergreen")) {
-    Write-Error "The 'Evergreen' module is not installed."
-    return
-}
+if (-not (Get-Module -ListAvailable -Name "Evergreen")) { Write-Error "Evergreen module missing."; return }
 if (-not (Get-Module -Name "Evergreen")) { Import-Module -Name "Evergreen" }
 if (-not (Test-Path $ConfigFile)) { Write-Error "Missing $ConfigFile"; return }
 
@@ -20,87 +17,63 @@ $DeployConfig = if (Test-Path $DeployConfigFile) { Get-Content $DeployConfigFile
 $Apps = $Config.Applications
 $Total = $Apps.Count
 $Index = 0
-$Results = @()
 
-Write-Host "`nStarting Evergreen Sync & PSADT Packaging..." -ForegroundColor Cyan
+Write-Host "`nStarting Orchestrated Evergreen Sync & Packaging..." -ForegroundColor Cyan
 
 foreach ($App in $Apps) {
     $Index++
-    Write-Progress -Activity "Evergreen Sync & Package" -Status "Processing: $($App.Name)" -PercentComplete (($Index / $Total) * 100)
+    Write-Progress -Activity "Sync & Package" -Status "Checking: $($App.Name)" -PercentComplete (($Index / $Total) * 100)
 
     try {
+        # --- PHASE 1: DOWNLOAD ---
         Write-Host "Syncing $($App.Name)... " -NoNewline -ForegroundColor White
-        $AppDetails = Get-EvergreenApp -Name $App.EvergreenApp -WarningAction SilentlyContinue
-        $FilterScript = [scriptblock]::Create($App.Filter)
         
-        $FilteredApp = $AppDetails | Where-Object {
-            $inputObject = $_
-            & $FilterScript
-        } | Sort-Object Version -Descending | Select-Object -First 1
-
-        if ($FilteredApp) {
-            $AppFolder = Join-Path $LibraryPath $App.Name
-            $SavedFiles = $FilteredApp | Save-EvergreenApp -Path $AppFolder -WarningAction SilentlyContinue
-            
-            if ($null -ne $SavedFiles) {
-                Write-Host "Done (v$($FilteredApp.Version))." -ForegroundColor Green
+        # Pass the custom AppName to the script
+        $SyncInfo = & (Join-Path $LibraryPath "Scripts\Get-EvergreenSync.ps1") `
+                     -EvergreenApp $App.EvergreenApp `
+                     -Filter $App.Filter `
+                     -LibraryPath $LibraryPath `
+                     -AppName $App.Name
+        
+        if ($null -ne $SyncInfo) {
+            if ($SyncInfo.NewDownload) {
+                Write-Host "New (v$($SyncInfo.Version))." -ForegroundColor Green
                 
-                foreach ($File in $SavedFiles) {
-                    $PathToLog = if ($File.Path) { $File.Path } else { $File.ToString() }
-                    if (Test-Path $PathToLog) {
-                        $FileInfo = Get-Item $PathToLog
-                        
-                        # Prepare Package Folder
-                        $VersionClean = $FilteredApp.Version -replace '[^0-9.]', ''
-                        $PackageName = "$($App.Vendor)_$($App.Name)_$($VersionClean)_01" -replace ' ', ''
-                        $CurrentPackagePath = Join-Path $PackagesPath $PackageName
-                        
-                        if (-not (Test-Path $CurrentPackagePath)) {
-                            Write-Host "  -> Creating PSADT Package: $PackageName" -ForegroundColor Cyan
-                            
-                            # CREATE DIRECTORIES FIRST
-                            $FilesDir = Join-Path $CurrentPackagePath "Files"
-                            New-Item -Path $FilesDir -ItemType Directory -Force | Out-Null
-                            
-                            # Copy Toolkit Core
-                            Copy-Item -Path $ToolkitSource -Destination $CurrentPackagePath -Recurse -Force
-                            
-                            # COPY INSTALLER INTO FILES SUBDIR
-                            Copy-Item -Path $PathToLog -Destination $FilesDir -Force
-                            
-                            # Customize Invoke-AppDeployToolkit.ps1
-                            $ScriptContent = Get-Content $TemplateFile -Raw
-                            $ScriptContent = $ScriptContent -replace "AppVendor = ''", "AppVendor = '$($App.Vendor)'"
-                            $ScriptContent = $ScriptContent -replace "AppName = ''", "AppName = '$($App.Name)'"
-                            $ScriptContent = $ScriptContent -replace "AppVersion = ''", "AppVersion = '$($FilteredApp.Version)'"
-                            $ScriptContent = $ScriptContent -replace "AppArch = ''", "AppArch = '$($FilteredApp.Architecture)'"
-                            $ScriptContent = $ScriptContent -replace "AppScriptAuthor = '<author name>'", "AppScriptAuthor = 'Maldino Nikaj'"
-                            $ScriptContent = $ScriptContent -replace "AppScriptDate = '.*'", "AppScriptDate = '$(Get-Date -Format 'yyyy-MM-dd')'"
-                            
-                            # Handle ProcessesToClose from DeploymentConfig.json if available
-                            if ($DeployConfig -and $DeployConfig.$($App.Name).ProcessesToClose) {
-                                $ProcList = "@('" + ($DeployConfig.$($App.Name).ProcessesToClose -join "', '") + "')"
-                                $ScriptContent = $ScriptContent -replace "AppProcessesToClose = @\(\)", "AppProcessesToClose = $ProcList"
-                            }
-                            
-                            $ScriptContent | Set-Content -Path (Join-Path $CurrentPackagePath "Invoke-AppDeployToolkit.ps1") -Force
-                        }
-
-                        $Results += [PSCustomObject]@{
-                            Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"; AppName = $App.Name; Status = "Success"
-                            FileName = $FileInfo.Name; Path = $PathToLog; Message = "Packaged v$($FilteredApp.Version)"
-                        }
-                    }
+                # --- PHASE 2: PACKAGING ---
+                $ProcList = if ($DeployConfig -and $DeployConfig.$($App.Name).ProcessesToClose) { $DeployConfig.$($App.Name).ProcessesToClose } else { @() }
+                
+                $PackageResult = & (Join-Path $LibraryPath "Scripts\New-PSADTPackage.ps1") `
+                                  -AppName $App.Name `
+                                  -Vendor $App.Vendor `
+                                  -Version $SyncInfo.Version `
+                                  -Arch $SyncInfo.Architecture `
+                                  -InstallerPath $SyncInfo.Path `
+                                  -PackagesPath $PackagesPath `
+                                  -ToolkitSource $ToolkitSource `
+                                  -TemplateFile $TemplateFile `
+                                  -ProcessesToClose $ProcList
+                
+                # --- PHASE 3: LOGGING ---
+                if (Test-Path $SyncInfo.Path) {
+                    $FileInfo = Get-Item $SyncInfo.Path
+                    & (Join-Path $LibraryPath "Scripts\Write-SyncLog.ps1") `
+                      -AppName $App.Name -Status "Success" -Message "New package: $PackageResult" `
+                      -LogFile $LogFile -FileName $FileInfo.Name -SizeMB ([math]::Round($FileInfo.Length/1MB,2)) -Path $SyncInfo.Path
+                    
+                    Write-Host "  -> Package Created: $PackageResult" -ForegroundColor DarkGreen
                 }
             } else {
                 Write-Host "Up to date." -ForegroundColor Gray
             }
+        } else {
+            Write-Host "Filtered." -ForegroundColor Yellow
         }
     }
     catch {
         Write-Host "Error!" -ForegroundColor Red
-        Write-Host "[ERROR] $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "  -> $($_.Exception.Message)" -ForegroundColor Red
+        & (Join-Path $LibraryPath "Scripts\Write-SyncLog.ps1") -AppName $App.Name -Status "Error" -Message $_.Exception.Message -LogFile $LogFile
     }
 }
 
-Write-Host "`nAll apps processed. Packages in: $PackagesPath" -ForegroundColor Green
+Write-Host "`nOrchestration Complete!" -ForegroundColor Green
