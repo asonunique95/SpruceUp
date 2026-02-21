@@ -1,16 +1,16 @@
 # Implementation Plan - PSADT Packaging Automation
 
 ## Phase 1: Core Package Staging
-- [ ] **Task: Implement PSADT Template Management**
-    - [ ] Write Tests: Verify the PSADT template source exists and can be copied to a target.
-    - [ ] Implement Feature: Create a function `Copy-PSADTTemplate` to stage the base toolkit structure.
-- [ ] **Task: Implement Package Naming & Organization**
-    - [ ] Write Tests: Verify that illegal characters are sanitized and the correct folder name is generated.
-    - [ ] Implement Feature: Create `Get-PSADTPackageName` for consistent naming: `<Vendor>_<AppName>_<Version>_<Arch>`.
-- [ ] **Task: Implement Installer Staging**
-    - [ ] Write Tests: Verify the installer file is moved to the `Files` subdirectory.
-    - [ ] Implement Feature: Create `Staging-PSADTInstaller` to move the downloaded file to its deployment folder.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1: Core Package Staging' (Protocol in workflow.md)**
+- [x] **Task: Implement PSADT Template Management** 7a53d86
+    - [x] Write Tests: Verify the PSADT template source exists and can be copied to a target. 7a53d86
+    - [x] Implement Feature: Create a function `Copy-PSADTTemplate` to stage the base toolkit structure. 7a53d86
+- [x] **Task: Implement Package Naming & Organization** 7a53d86
+    - [x] Write Tests: Verify that illegal characters are sanitized and the correct folder name is generated. 7a53d86
+    - [x] Implement Feature: Create `Get-PSADTPackageName` for consistent naming: `<Vendor>_<AppName>_<Version>_<Arch>`. 7a53d86
+- [x] **Task: Implement Installer Staging** 7a53d86
+    - [x] Write Tests: Verify the installer file is moved to the `Files` subdirectory. 7a53d86
+    - [x] Implement Feature: Create `Staging-PSADTInstaller` to move the downloaded file to its deployment folder. 7a53d86
+- [~] **Task: Conductor - User Manual Verification 'Phase 1: Core Package Staging' (Protocol in workflow.md)**
 
 ## Phase 2: Metadata Injection
 - [ ] **Task: Implement App Header Injection**
