@@ -1,10 +1,28 @@
 {
   "Applications": [
     {
-      "Name": "MicrosoftEdge",
-      "Vendor": "Microsoft",
-      "EvergreenApp": "MicrosoftEdge",
-      "Filter": "$_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
+      "Name": "7Zip",
+      "Vendor": "Igor Pavlov",
+      "EvergreenApp": "7Zip",
+      "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
+    },
+    {
+      "Name": "AdobeAcrobatPro",
+      "Vendor": "Adobe",
+      "EvergreenApp": "AdobeAcrobatProStdDC",
+      "Filter": "$_.Architecture -eq 'x64'"
+    },
+    {
+      "Name": "Firefox",
+      "Vendor": "Mozilla",
+      "EvergreenApp": "MozillaFirefox",
+      "Filter": "$_.architecture -eq 'x64' -and $_.type -eq 'msi' -and $_.channel -eq 'Current'"
+    },
+    {
+      "Name": "Git",
+      "Vendor": "Git Team",
+      "EvergreenApp": "GitForWindows",
+      "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'exe'"
     },
     {
       "Name": "GoogleChrome",
@@ -13,10 +31,10 @@
       "Filter": "$_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
     },
     {
-      "Name": "7Zip",
-      "Vendor": "Igor Pavlov",
-      "EvergreenApp": "7Zip",
-      "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
+      "Name": "MicrosoftEdge",
+      "Vendor": "Microsoft",
+      "EvergreenApp": "MicrosoftEdge",
+      "Filter": "$_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
     },
     {
       "Name": "NotepadPlusPlus",
@@ -25,46 +43,10 @@
       "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
     },
     {
-      "Name": "WinSCP",
-      "Vendor": "WinSCP Team",
-      "EvergreenApp": "WinSCP",
-      "Filter": "$_.Architecture -eq 'x86'"
-    },
-    {
       "Name": "PuTTY",
       "Vendor": "Simon Tatham",
       "EvergreenApp": "PuTTY",
       "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
-    },
-    {
-      "Name": "Wireshark",
-      "Vendor": "Wireshark Team",
-      "EvergreenApp": "Wireshark",
-      "Filter": "$_.Release -eq 'Stable' -and $_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
-    },
-    {
-      "Name": "VSCode",
-      "Vendor": "Microsoft",
-      "EvergreenApp": "MicrosoftVisualStudioCode",
-      "Filter": "$_.Platform -notlike '*user' -and $_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64'"
-    },
-    {
-      "Name": "WinDirStat",
-      "Vendor": "WinDirStat Team",
-      "EvergreenApp": "WinDirStat",
-      "Filter": "$_.Architecture -eq 'x86'"
-    },
-    {
-      "Name": "SpyderIDE",
-      "Vendor": "Spyder Project",
-      "EvergreenApp": "SpyderIDE",
-      "Filter": "$_.Architecture -eq 'x64'"
-    },
-    {
-      "Name": "Python",
-      "Vendor": "Python Software Foundation",
-      "EvergreenApp": "Python",
-      "Filter": "$_.Architecture -eq 'x64'"
     },
     {
       "Name": "PyCharmCommunity",
@@ -79,15 +61,15 @@
       "Filter": "$_.Edition -eq 'PyCharm Professional'"
     },
     {
-      "Name": "Git",
-      "Vendor": "Git Team",
-      "EvergreenApp": "GitForWindows",
-      "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'exe'"
+      "Name": "Python",
+      "Vendor": "Python Software Foundation",
+      "EvergreenApp": "Python",
+      "Filter": "$_.Architecture -eq 'x64'"
     },
     {
-      "Name": "AdobeAcrobatPro",
-      "Vendor": "Adobe",
-      "EvergreenApp": "AdobeAcrobatProStdDC",
+      "Name": "SpyderIDE",
+      "Vendor": "Spyder Project",
+      "EvergreenApp": "SpyderIDE",
       "Filter": "$_.Architecture -eq 'x64'"
     },
     {
@@ -95,6 +77,30 @@
       "Vendor": "TestVendor",
       "EvergreenApp": "SomeEvergreenApp",
       "Filter": "\\.Version -eq '1.0'"
+    },
+    {
+      "Name": "VSCode",
+      "Vendor": "Microsoft",
+      "EvergreenApp": "MicrosoftVisualStudioCode",
+      "Filter": "$_.Platform -notlike '*user' -and $_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64'"
+    },
+    {
+      "Name": "WinDirStat",
+      "Vendor": "WinDirStat Team",
+      "EvergreenApp": "WinDirStat",
+      "Filter": "$_.Architecture -eq 'x86'"
+    },
+    {
+      "Name": "WinSCP",
+      "Vendor": "WinSCP Team",
+      "EvergreenApp": "WinSCP",
+      "Filter": "$_.Architecture -eq 'x86'"
+    },
+    {
+      "Name": "Wireshark",
+      "Vendor": "Wireshark Team",
+      "EvergreenApp": "Wireshark",
+      "Filter": "$_.Release -eq 'Stable' -and $_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
     }
   ]
 }
