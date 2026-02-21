@@ -29,14 +29,28 @@ if (-not (Test-Path $FullConfigPath)) {
 
 # 2. Load Manifest
 Write-Verbose "Loading manifest from '$FullConfigPath'..."
-$Manifest = Get-Content -Path $FullConfigPath -Raw | ConvertFrom-Json
+try {
+    $RawJson = Get-Content -Path $FullConfigPath -Raw -ErrorAction Stop
+    $Manifest = $RawJson | ConvertFrom-Json -ErrorAction Stop
+}
+catch {
+    Write-Error "Failed to read or parse manifest: $($_.Exception.Message)"
+    return
+}
 
 # 3. Check for duplicates
-$Existing = $Manifest.Applications | Where-Object { $_.Name -eq $Name -or $_.EvergreenApp -eq $EvergreenApp }
-if ($Existing) {
-    Write-Warning "An application with Name '$Name' or EvergreenApp '$EvergreenApp' already exists in the manifest."
-    $Confirm = Read-Host "Do you want to proceed and add a potential duplicate? (y/n)"
-    if ($Confirm -ne "y") { return }
+$ExistingByName = $Manifest.Applications | Where-Object { $_.Name -eq $Name }
+$ExistingByApp = $Manifest.Applications | Where-Object { $_.EvergreenApp -eq $EvergreenApp }
+
+if ($ExistingByName -or $ExistingByApp) {
+    if ($ExistingByName) { Write-Warning "An entry with Name '$Name' already exists." }
+    if ($ExistingByApp) { Write-Warning "An entry with EvergreenApp '$EvergreenApp' already exists." }
+    
+    $Confirm = Read-Host "`nDo you want to proceed and add a potential duplicate? (y/n)"
+    if ($Confirm -ne "y") { 
+        Write-Host "Operation cancelled." -ForegroundColor Gray
+        return 
+    }
 }
 
 # 4. Create new entry
@@ -52,6 +66,9 @@ Write-Host "Adding '$Name' to manifest..." -ForegroundColor Cyan
 $Manifest.Applications += $NewApp
 
 try {
+    # Sort apps alphabetically by name for better maintainability
+    $Manifest.Applications = $Manifest.Applications | Sort-Object Name
+    
     $Manifest | ConvertTo-Json -Depth 10 | Out-File -FilePath $FullConfigPath -Encoding utf8 -Force -ErrorAction Stop
     Write-Host "Successfully updated '$FullConfigPath'." -ForegroundColor Green
 }

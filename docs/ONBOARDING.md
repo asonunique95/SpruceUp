@@ -13,15 +13,16 @@ The onboarding process involves three main steps:
 
 ## Step 1: Discover the Application
 
-Use `Find-EvergreenLibraryApp.ps1` to search for the application.
+Use `Find-EvergreenLibraryApp.ps1` to search for the application. The script is robust and tries both wildcard and literal matches.
 
 ```powershell
-.\Scripts\Find-EvergreenLibraryApp.ps1 -Name "Chrome"
+.\Scripts\Find-EvergreenLibraryApp.ps1 -Name "mozilla"
 ```
 
-This script will:
-- List all matching applications in the Evergreen module.
-- If a single match is found, it will display the **Available Properties** you can use for filtering (e.g., `Channel`, `Version`, `Architecture`, `Type`).
+**Key Features:**
+- Lists all matching applications.
+- If a single match is found, it displays the **Available Properties** you can use for filtering (e.g., `Channel`, `Version`, `Architecture`, `Type`, `Language`).
+- Shows **Sample Data** for the app to help you understand the values you're filtering for.
 
 ---
 
@@ -30,33 +31,32 @@ This script will:
 Once you have the `EvergreenApp` name, use `Test-EvergreenLibraryFilter.ps1` to interactively refine your filter.
 
 ```powershell
-.\Scripts\Test-EvergreenLibraryFilter.ps1 -EvergreenApp "GoogleChrome"
+.\Scripts\Test-EvergreenLibraryFilter.ps1 -EvergreenApp "MozillaFirefox"
 ```
 
 **How it works:**
-- The script enters an interactive loop.
-- Type your filter string (e.g., `$_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64'`).
-- The script displays all records that match your filter.
-- Continue refining until you are happy with the results.
-- Type `done` to finish and see your final filter choice.
+- Enter your filter string (e.g., `$_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64'`).
+- The script displays matching records and a **Matched Metadata Summary**.
+- **Crucial:** The summary shows the `Vendor` and `EvergreenApp` values you'll need for Step 3.
+- Type `done` to finish once you are happy with the results.
 
 ---
 
 ## Step 3: Add to the Library
 
-Finally, use `Add-EvergreenLibraryApp.ps1` to register the application in `EvergreenLibrary.json`.
+Finally, use `Add-EvergreenLibraryApp.ps1` to register the application. It automatically handles duplicates and keeps the manifest sorted alphabetically.
 
 ```powershell
-.\Scripts\Add-EvergreenLibraryApp.ps1 -Name "GoogleChrome" `
-                                     -Vendor "Google" `
-                                     -EvergreenApp "GoogleChrome" `
-                                     -Filter '$_.Channel -eq "Stable" -and $_.Architecture -eq "x64" -and $_.Type -eq "msi"'
+.\Scripts\Add-EvergreenLibraryApp.ps1 -Name "Firefox" `
+                                     -Vendor "Mozilla" `
+                                     -EvergreenApp "MozillaFirefox" `
+                                     -Filter '$_.Channel -eq "Stable" -and $_.Architecture -eq "x64"'
 ```
 
 **Parameters:**
-- `-Name`: The friendly name used for your folder structure within the `Installers/` directory.
-- `-Vendor`: The publisher name.
-- `-EvergreenApp`: The exact name found in Step 1.
+- `-Name`: Your preferred friendly name (this will be the folder name in `Installers/`).
+- `-Vendor`: The publisher name (found in Step 2 summary).
+- `-EvergreenApp`: The exact name (found in Step 1 or 2).
 - `-Filter`: The validated string from Step 2.
 
 ---
@@ -68,4 +68,5 @@ Finally, use `Add-EvergreenLibraryApp.ps1` to register the application in `Everg
 | **Stable x64 MSI** | `$_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64' -and $_.Type -eq 'msi'` |
 | **Latest EXE** | `$_.Type -eq 'exe'` |
 | **Specific Edition** | `$_.Edition -eq 'Professional'` |
+| **Language Specific** | `$_.Language -eq 'en-US'` |
 | **Exclude Preview** | `$_.Channel -ne 'Beta' -and $_.Channel -ne 'Dev'` |
