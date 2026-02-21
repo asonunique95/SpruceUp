@@ -13,13 +13,13 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Core Package Staging' (Protocol in workflow.md)** d600044
 
 ## Phase 2: Metadata Injection
-- [ ] **Task: Implement App Header Injection**
-    - [ ] Write Tests: Verify `Invoke-AppDeployToolkit.ps1` header variables are correctly updated.
-    - [ ] Implement Feature: Create `Set-PSADTAppHeader` to programmatically update `appVendor`, `appName`, `appVersion`, and `appArch`.
-- [ ] **Task: Implement Dynamic Installer Selection Logic**
-    - [ ] Write Tests: Verify the PSADT script correctly identifies the installer in the `Files` folder.
-    - [ ] Implement Feature: Update the `Invoke-AppDeployToolkit.ps1` template to use a variable for the installer name.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2: Metadata Injection' (Protocol in workflow.md)**
+- [x] **Task: Implement App Header Injection** 6ad35d5
+    - [x] Write Tests: Verify `Invoke-AppDeployToolkit.ps1` header variables are correctly updated. 6ad35d5
+    - [x] Implement Feature: Create `Set-PSADTAppHeader` to programmatically update `appVendor`, `appName`, `appVersion`, and `appArch`. 6ad35d5
+- [x] **Task: Implement Dynamic Installer Selection Logic** 6ad35d5
+    - [x] Write Tests: Verify the PSADT script correctly identifies the installer in the `Files` folder. 6ad35d5
+    - [x] Implement Feature: Update the `Invoke-AppDeployToolkit.ps1` template to use a variable for the installer name. 6ad35d5
+- [~] **Task: Conductor - User Manual Verification 'Phase 2: Metadata Injection' (Protocol in workflow.md)**
 
 ## Phase 3: Integration & Integration
 - [ ] **Task: Integrate Packaging into Main Sync**
