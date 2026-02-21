@@ -80,3 +80,98 @@ function Stage-PSADTInstaller {
         return $false
     }
 }
+
+function Set-PSADTAppHeader {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$PackagePath,
+        [Parameter(Mandatory = $true)]
+        [string]$Vendor,
+        [Parameter(Mandatory = $true)]
+        [string]$AppName,
+        [Parameter(Mandatory = $true)]
+        [string]$Version,
+        [Parameter(Mandatory = $false)]
+        [string]$Arch = "x64",
+        [Parameter(Mandatory = $false)]
+        [string[]]$ProcessesToClose = @()
+    )
+
+    $ScriptFile = Join-Path $PackagePath "Invoke-AppDeployToolkit.ps1"
+    if (-not (Test-Path $ScriptFile)) {
+        Write-Error "PSADT Script not found at '$ScriptFile'."
+        return $false
+    }
+
+    $Content = Get-Content -Path $ScriptFile -Raw
+
+    Write-Verbose "Injecting metadata into '$ScriptFile'..."
+    
+    # Replace the metadata variables in the $adtSession hashtable
+    # We use regex to be more flexible with whitespace
+    $Content = $Content -replace "AppVendor\s*=\s*''", "AppVendor = '$Vendor'"
+    $Content = $Content -replace "AppName\s*=\s*''", "AppName = '$AppName'"
+    $Content = $Content -replace "AppVersion\s*=\s*''", "AppVersion = '$Version'"
+    $Content = $Content -replace "AppArch\s*=\s*''", "AppArch = '$Arch'"
+
+    # Replace ProcessesToClose if provided
+    if ($ProcessesToClose.Count -gt 0) {
+        $ProcString = "@('" + ($ProcessesToClose -join "', '") + "')"
+        $Content = $Content -replace "AppProcessesToClose\s*=\s*@\(\)", "AppProcessesToClose = $ProcString"
+    }
+
+    try {
+        $Content | Out-File -FilePath $ScriptFile -Encoding utf8 -Force -ErrorAction Stop
+        return $true
+    }
+    catch {
+        Write-Error "Failed to write updated PSADT script: $($_.Exception.Message)"
+        return $false
+    }
+}
+
+function Set-PSADTInstallCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$PackagePath,
+        [Parameter(Mandatory = $true)]
+        [string]$InstallerName
+    )
+
+    $ScriptFile = Join-Path $PackagePath "Invoke-AppDeployToolkit.ps1"
+    if (-not (Test-Path $ScriptFile)) {
+        Write-Error "PSADT Script not found at '$ScriptFile'."
+        return $false
+    }
+
+    $Content = Get-Content -Path $ScriptFile -Raw
+
+    $Extension = [System.IO.Path]::GetExtension($InstallerName).ToLower()
+    
+    $InstallCommand = ""
+    if ($Extension -eq ".msi") {
+        $InstallCommand = "Start-ADTMsiProcess -FilePath `"`$PSScriptRoot\Files\$InstallerName`" -Action Install"
+    } else {
+        # Default for EXE/others - assuming silent flags.
+        $InstallCommand = "Start-ADTProcess -FilePath `"`$PSScriptRoot\Files\$InstallerName`" -Arguments `"/silent /norestart`\""
+    }
+
+    Write-Verbose "Injecting install command for '$InstallerName' into '$ScriptFile'..."
+    
+    $Placeholder = "## <Perform Installation tasks here>"
+    $NewContent = "`t$InstallCommand"
+    
+    # We use regex to replace the placeholder
+    $Content = $Content -replace [regex]::Escape($Placeholder), $NewContent
+
+    try {
+        $Content | Out-File -FilePath $ScriptFile -Encoding utf8 -Force -ErrorAction Stop
+        return $true
+    }
+    catch {
+        Write-Error "Failed to write updated PSADT script with install command: $($_.Exception.Message)"
+        return $false
+    }
+}
