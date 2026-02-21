@@ -1,12 +1,12 @@
 # Implementation Plan - IntuneWin Conversion Automation
 
-## Phase 1: Tool Setup and Basic Conversion
-- [ ] **Task: Setup IntuneWinAppUtil Integration**
-    - [ ] Implement Feature: Create a directory `Tools` and place (or instructions to place) `IntuneWinAppUtil.exe` inside it.
-    - [ ] Implement Feature: Create a function `Get-IntuneWinAppUtilPath` to locate the executable.
-- [ ] **Task: Implement Basic Conversion Function**
-    - [ ] Implement Feature: Create `New-IntuneWinPackage` to wrap a PSADT folder into an `.intunewin` file using basic parameters.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1: Tool Setup and Basic Conversion' (Protocol in workflow.md)**
+## Phase 1: Tool Setup and Basic Conversion [checkpoint: 52486f4]
+- [x] **Task: Setup IntuneWinAppUtil Integration** 6a82f32
+    - [x] Implement Feature: Create a directory `Tools` and place (or instructions to place) `IntuneWinAppUtil.exe` inside it. 6a82f32
+    - [x] Implement Feature: Create a function `Get-IntuneWinAppUtilPath` to locate the executable. 6a82f32
+- [x] **Task: Implement Basic Conversion Function** 6a82f32
+    - [x] Implement Feature: Create `New-IntuneWinPackage` to wrap a PSADT folder into an `.intunewin` file using basic parameters. 6a82f32
+- [x] **Task: Conductor - User Manual Verification 'Phase 1: Tool Setup and Basic Conversion' (Protocol in workflow.md)** 52486f4
 
 ## Phase 2: Advanced Conversion and Error Handling
 - [ ] **Task: Implement Output Directory Management**
