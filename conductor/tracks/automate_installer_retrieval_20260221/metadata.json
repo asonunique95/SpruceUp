@@ -1,8 +1,0 @@
-{
-  "track_id": "automate_installer_retrieval_20260221",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-21T16:15:00Z",
-  "updated_at": "2026-02-21T16:15:00Z",
-  "description": "Automate installer retrieval and organization based on EvergreenLibrary.json"
-}
