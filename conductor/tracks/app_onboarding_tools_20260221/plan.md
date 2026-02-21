@@ -18,9 +18,9 @@
     - [x] Implement Feature: Create `Add-EvergreenLibraryApp.ps1` to gather inputs and perform the automated append. 76b452d
 - [x] **Task: Conductor - User Manual Verification 'Phase 3: Automated Manifest Update' (Protocol in workflow.md)** bb8078e
 
-## Phase 4: Documentation & Final Integration
-- [ ] **Task: Create Onboarding Guide**
-    - [ ] Implement Feature: Write `docs/ONBOARDING.md` with step-by-step instructions and examples.
-- [ ] **Task: Update README**
-    - [ ] Implement Feature: Add a reference to the new onboarding tools in the main `README.md`.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 4: Documentation & Final Integration' (Protocol in workflow.md)**
+## Phase 4: Documentation & Final Integration [checkpoint: 7a2df03]
+- [x] **Task: Create Onboarding Guide** 3a02e39
+    - [x] Implement Feature: Write `docs/ONBOARDING.md` with step-by-step instructions and examples. 3a02e39
+- [x] **Task: Update README** 3a02e39
+    - [x] Implement Feature: Add a reference to the new onboarding tools in the main `README.md`. 3a02e39
+- [x] **Task: Conductor - User Manual Verification 'Phase 4: Documentation & Final Integration' (Protocol in workflow.md)** 7a2df03
