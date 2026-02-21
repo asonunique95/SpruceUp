@@ -155,7 +155,7 @@ function Set-PSADTInstallCommand {
         $InstallCommand = "Start-ADTMsiProcess -FilePath `"`$PSScriptRoot\Files\$InstallerName`" -Action Install"
     } else {
         # Default for EXE/others - assuming silent flags.
-        $InstallCommand = "Start-ADTProcess -FilePath `"`$PSScriptRoot\Files\$InstallerName`" -Arguments `"/silent /norestart`\""
+        $InstallCommand = "Start-ADTProcess -FilePath `"`$PSScriptRoot\Files\$InstallerName`" -Arguments `"/silent /norestart`""
     }
 
     Write-Verbose "Injecting install command for '$InstallerName' into '$ScriptFile'..."
