@@ -54,7 +54,7 @@ Finally, use `Add-EvergreenLibraryApp.ps1` to register the application in `Everg
 ```
 
 **Parameters:**
-- `-Name`: The friendly name used for your local folder structure.
+- `-Name`: The friendly name used for your folder structure within the `Installers/` directory.
 - `-Vendor`: The publisher name.
 - `-EvergreenApp`: The exact name found in Step 1.
 - `-Filter`: The validated string from Step 2.
