@@ -1,10 +1,10 @@
 # Implementation Plan - Application Onboarding Tools
 
-## Phase 1: Application Discovery & Metadata Retrieval
-- [ ] **Task: Implement Discovery Script**
-    - [ ] Write Tests: Verify `Find-EvergreenLibraryApp.ps1` correctly searches the Evergreen module and handles non-existent apps.
-    - [ ] Implement Feature: Create `Find-EvergreenLibraryApp.ps1` to display app names and property schema.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1: Application Discovery & Metadata Retrieval' (Protocol in workflow.md)**
+## Phase 1: Application Discovery & Metadata Retrieval [checkpoint: 70770d7]
+- [x] **Task: Implement Discovery Script** 9a42be4
+    - [x] Write Tests: (Skipped per user preference)
+    - [x] Implement Feature: Create `Find-EvergreenLibraryApp.ps1` to display app names and property schema. 9a42be4
+- [x] **Task: Conductor - User Manual Verification 'Phase 1: Application Discovery & Metadata Retrieval' (Protocol in workflow.md)** 70770d7
 
 ## Phase 2: Interactive Filter Testing
 - [ ] **Task: Implement Filter Testing Script**
