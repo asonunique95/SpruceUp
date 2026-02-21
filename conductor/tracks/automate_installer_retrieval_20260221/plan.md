@@ -34,3 +34,4 @@
 
 ## Phase: Review Fixes
 - [x] Task: Apply review suggestions c6a07ef
+- [x] Task: Fix directory duplication a299a90
