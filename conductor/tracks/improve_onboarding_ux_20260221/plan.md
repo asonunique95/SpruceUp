@@ -1,11 +1,11 @@
 # Implementation Plan - Improve Onboarding Tools UX
 
-## Phase 1: Robust Application Discovery
-- [ ] **Task: Refactor Find-EvergreenLibraryApp.ps1**
-    - [ ] Implement Feature: Wrap `Find-EvergreenApp` in a try-catch block.
-    - [ ] Implement Feature: Improve search logic to try both wildcard and literal matches.
-    - [ ] Implement Feature: Ensure property schema is displayed clearly for single matches.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1: Robust Application Discovery' (Protocol in workflow.md)**
+## Phase 1: Robust Application Discovery [checkpoint: c25ff24]
+- [x] **Task: Refactor Find-EvergreenLibraryApp.ps1** f889dda
+    - [x] Implement Feature: Wrap `Find-EvergreenApp` in a try-catch block. f889dda
+    - [x] Implement Feature: Improve search logic to try both wildcard and literal matches. f889dda
+    - [x] Implement Feature: Ensure property schema is displayed clearly for single matches. f889dda
+- [x] **Task: Conductor - User Manual Verification 'Phase 1: Robust Application Discovery' (Protocol in workflow.md)** c25ff24
 
 ## Phase 2: Enhanced Metadata Visibility
 - [ ] **Task: Refactor Test-EvergreenLibraryFilter.ps1**
