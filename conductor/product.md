@@ -12,10 +12,12 @@ The project aims to develop a PowerShell-based automation tool that leverages th
 
 ## Core Goals
 - **Full Lifecycle Automation:** Automate everything from discovering new application versions to downloading, organizing, and cleaning up outdated installers.
+- **Granular Pipeline Control:** Provide flexibility to stop the automation at specific stages (Download, PSADT, IntuneWin) based on immediate needs.
 - **PoC Development:** Initially focus on a solid Proof of Concept (PoC) to demonstrate the automated flow before expanding into complex integrations.
 
 ## Key Features
 - **Version Tracking:** Continuously monitor for new application versions and automatically initiate downloads.
+- **Configurable Pipeline:** Use the `-StopAtPhase` parameter to control how far an application proceeds through the packaging and conversion flow.
 - **Streamlined Onboarding:** Specialized helper scripts, interactive filter testing, and documentation to simplify adding new applications to the library.
 - **Multi-Publisher Support:** Comprehensive support for major publishers, including Microsoft, Google, Adobe, and others.
 - **Storage Management:** Intelligent organization of installers into a dedicated `Installers/` subfolder and automatic cleanup of legacy versions to optimize local storage.
