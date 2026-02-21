@@ -11,7 +11,18 @@ function Get-EvergreenLibraryApps {
 
     $JsonContent = Get-Content -Path $Path -Raw | ConvertFrom-Json
     
-    # Return the applications array
+    # Return the applications array if valid
+    if ($null -eq $JsonContent.Applications -or $JsonContent.Applications.Count -eq 0) {
+        throw "The manifest at '$Path' is missing the 'Applications' property or contains no apps."
+    }
+
+    # Basic schema check for each app
+    foreach ($App in $JsonContent.Applications) {
+        if (-not $App.Name -or -not $App.EvergreenApp) {
+            throw "Invalid application entry found. 'Name' and 'EvergreenApp' are required fields."
+        }
+    }
+
     return $JsonContent.Applications
 }
 
@@ -89,9 +100,29 @@ function Sync-EvergreenLibraryApp {
         New-Item -ItemType Directory -Path $TargetFolder -Force | Out-Null
     }
 
-    # Use Save-EvergreenApp for actual download
-    # We pass the metadata object directly to Save-EvergreenApp
-    $SavedFile = $Latest | Save-EvergreenApp -Path $TargetFolder
+    # Use Save-EvergreenApp for actual download with retry logic
+    $MaxRetries = 3
+    $RetryCount = 0
+    $SavedFile = $null
+    $Success = $false
+
+    while (-not $Success -and $RetryCount -lt $MaxRetries) {
+        try {
+            # We pass the metadata object directly to Save-EvergreenApp
+            $SavedFile = $Latest | Save-EvergreenApp -Path $TargetFolder -ErrorAction Stop
+            $Success = $true
+        }
+        catch {
+            $RetryCount++
+            Write-Warning "Download failed for '$AppName' (Attempt $RetryCount of $MaxRetries): $($_.Exception.Message)"
+            if ($RetryCount -lt $MaxRetries) {
+                Start-Sleep -Seconds (5 * $RetryCount) # Exponential backoff
+            }
+            else {
+                throw "Failed to download '$AppName' after $MaxRetries attempts."
+            }
+        }
+    }
 
     return [PSCustomObject]@{
         NewDownload = $true
