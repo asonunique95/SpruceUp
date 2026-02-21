@@ -29,10 +29,18 @@ $ScriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 # 2. Setup Paths
 $FullConfigPath = Join-Path $LibraryPath $ConfigFile
 $FullLogPath = Join-Path $LibraryPath $LogFile
+$InstallersPath = Join-Path $LibraryPath "Installers"
 $PackagesPath = Join-Path $LibraryPath "Packages"
 $IntuneWinPath = Join-Path $PackagesPath "IntuneWin"
 
-# 3. Load Manifest
+# 3. Ensure Directories Exist
+foreach ($Path in @($InstallersPath, $PackagesPath, $IntuneWinPath)) {
+    if (-not (Test-Path -Path $Path)) {
+        New-Item -ItemType Directory -Path $Path -Force | Out-Null
+    }
+}
+
+# 4. Load Manifest
 try {
     $Apps = Get-EvergreenLibraryApps -Path $FullConfigPath
 }
@@ -41,7 +49,7 @@ catch {
     return
 }
 
-# 4. Filter by AppName if provided
+# 5. Filter by AppName if provided
 if ($AppName) {
     $Apps = $Apps | Where-Object { $_.Name -eq $AppName }
     if (-not $Apps) {
@@ -50,7 +58,7 @@ if ($AppName) {
     }
 }
 
-# 5. Process Applications
+# 6. Process Applications
 Write-Host "Starting Evergreen Library Sync for $($Apps.Count) applications..." -ForegroundColor Cyan
 
 foreach ($App in $Apps) {
