@@ -73,7 +73,8 @@ function Sync-EvergreenLibraryApp {
     }
 
     # 2. Build root folder for the application
-    $AppRoot = Join-Path $LibraryPath $Publisher
+    $AppRoot = Join-Path $LibraryPath "Installers"
+    $AppRoot = Join-Path $AppRoot $Publisher
     $AppRoot = Join-Path $AppRoot $AppName
 
     # 3. Build expected target path for the check (mimicking Save-EvergreenApp behavior)
