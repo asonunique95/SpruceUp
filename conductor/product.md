@@ -22,4 +22,5 @@ The project aims to develop a PowerShell-based automation tool that leverages th
 ## Integration Strategy
 - **Stage 1 (Completed):** Standalone automated flow for discovery, download, and organization based on `EvergreenLibrary.json`.
 - **Stage 2 (Completed):** Automate the creation of PowerShell App Deployment Toolkit (PSADT) packages by copying templates and installers and dynamically populating `Invoke-AppDeployToolkit.ps1`.
-- **Stage 3 (Current):** Convert generated PSADT packages into `.intunewin` files for automated Intune uploads.
+- **Stage 3 (Completed):** Convert generated PSADT packages into `.intunewin` files for automated Intune uploads.
+- **Stage 4 (Future):** Implement automated upload to Microsoft Intune via Graph API.
