@@ -72,20 +72,21 @@ function Sync-EvergreenLibraryApp {
         return $null
     }
 
-    # 2. Build target path
-    # Expected structure: <RootPath>\<Publisher>\<Application>\<Channel>\<Version>\<Architecture>\
-    $TargetFolder = Join-Path $LibraryPath $Publisher
-    $TargetFolder = Join-Path $TargetFolder $AppName
-    if ($Latest.Channel) { $TargetFolder = Join-Path $TargetFolder $Latest.Channel }
-    $TargetFolder = Join-Path $TargetFolder $Latest.Version
-    if ($Latest.Architecture) { $TargetFolder = Join-Path $TargetFolder $Latest.Architecture }
+    # 2. Build root folder for the application
+    $AppRoot = Join-Path $LibraryPath $Publisher
+    $AppRoot = Join-Path $AppRoot $AppName
 
-    # 3. Check if file already exists
+    # 3. Build expected target path for the check (mimicking Save-EvergreenApp behavior)
+    $ExpectedFolder = $AppRoot
+    if ($Latest.Channel) { $ExpectedFolder = Join-Path $ExpectedFolder $Latest.Channel }
+    if ($Latest.Version) { $ExpectedFolder = Join-Path $ExpectedFolder $Latest.Version }
+    if ($Latest.Architecture) { $ExpectedFolder = Join-Path $ExpectedFolder $Latest.Architecture }
+
     $FileName = $Latest.URI.Split('/')[-1]
-    $TargetPath = Join-Path $TargetFolder $FileName
+    $TargetPath = Join-Path $ExpectedFolder $FileName
 
     if (Test-Path -Path $TargetPath) {
-        Write-Verbose "Installer '$FileName' already exists at '$TargetFolder'. Skipping download."
+        Write-Verbose "Installer '$FileName' already exists at '$ExpectedFolder'. Skipping download."
         return [PSCustomObject]@{
             NewDownload = $false
             Version = $Latest.Version
@@ -95,9 +96,9 @@ function Sync-EvergreenLibraryApp {
     }
 
     # 4. Download and organize
-    Write-Verbose "Downloading '$AppName' v$($Latest.Version) to '$TargetFolder'..."
-    if (-not (Test-Path -Path $TargetFolder)) {
-        New-Item -ItemType Directory -Path $TargetFolder -Force | Out-Null
+    Write-Verbose "Downloading '$AppName' v$($Latest.Version) to '$AppRoot'..."
+    if (-not (Test-Path -Path $AppRoot)) {
+        New-Item -ItemType Directory -Path $AppRoot -Force | Out-Null
     }
 
     # Use Save-EvergreenApp for actual download with retry logic
@@ -109,7 +110,8 @@ function Sync-EvergreenLibraryApp {
     while (-not $Success -and $RetryCount -lt $MaxRetries) {
         try {
             # We pass the metadata object directly to Save-EvergreenApp
-            $SavedFile = $Latest | Save-EvergreenApp -Path $TargetFolder -ErrorAction Stop
+            # Save-EvergreenApp adds Channel/Version/Architecture subfolders automatically
+            $SavedFile = $Latest | Save-EvergreenApp -Path $AppRoot -ErrorAction Stop
             $Success = $true
         }
         catch {
