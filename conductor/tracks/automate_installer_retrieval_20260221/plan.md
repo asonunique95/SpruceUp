@@ -15,14 +15,14 @@
     - [x] Implement Feature: Create `Write-EvergreenSyncLog` for consistent tracking. 89bbadc
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Core Automation Logic' (Protocol in workflow.md)** 89bbadc
 
-## Phase 2: Error Handling & Resilience
-- [ ] **Task: Implement Retry Logic for Downloads**
-    - [ ] Write Tests: Simulate network failure and verify the script retries the download.
-    - [ ] Implement Feature: Add retry loop and timeout handling to `Sync-EvergreenLibraryApp`.
-- [ ] **Task: Implement Input Validation & Sanitization**
-    - [ ] Write Tests: Verify the script handles invalid application names or missing manifest fields.
-    - [ ] Implement Feature: Add comprehensive parameter validation and manifest schema checks.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2: Error Handling & Resilience' (Protocol in workflow.md)**
+## Phase 2: Error Handling & Resilience [checkpoint: b909c50]
+- [x] **Task: Implement Retry Logic for Downloads** b909c50
+    - [x] Write Tests: Simulate network failure and verify the script retries the download. b909c50
+    - [x] Implement Feature: Add retry loop and timeout handling to `Sync-EvergreenLibraryApp`. b909c50
+- [x] **Task: Implement Input Validation & Sanitization** b909c50
+    - [x] Write Tests: Verify the script handles invalid application names or missing manifest fields. b909c50
+    - [x] Implement Feature: Add comprehensive parameter validation and manifest schema checks. b909c50
+- [x] **Task: Conductor - User Manual Verification 'Phase 2: Error Handling & Resilience' (Protocol in workflow.md)** b909c50
 
 ## Phase 3: Final Integration & Documentation
 - [ ] **Task: Create Main Entry Point Script**
