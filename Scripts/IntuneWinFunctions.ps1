@@ -2,12 +2,15 @@ function Get-IntuneWinAppUtilPath {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $false)]
-        [string]$ToolPath = "Tools\IntuneWinAppUtil.exe"
+        [string]$ToolPath
     )
 
+    $DefaultPath = "Tools\IntuneWinAppUtil.exe"
+    $SearchPath = if ([string]::IsNullOrWhiteSpace($ToolPath)) { $DefaultPath } else { $ToolPath }
+
     # Check if the tool exists at the provided path
-    if (Test-Path -Path $ToolPath) {
-        return (Resolve-Path -Path $ToolPath).Path
+    if (Test-Path -Path $SearchPath) {
+        return (Resolve-Path -Path $SearchPath).Path
     }
 
     # Fallback: check if it's in the PATH
@@ -30,18 +33,27 @@ function New-IntuneWinPackage {
         [Parameter(Mandatory = $true)]
         [string]$OutputFolder,
         [Parameter(Mandatory = $false)]
-        [string]$ToolPath
+        [string]$ToolPath = "Tools\IntuneWinAppUtil.exe"
     )
 
     $ExePath = Get-IntuneWinAppUtilPath -ToolPath $ToolPath
     if (-not $ExePath) { return $false }
 
+    # Ensure output folder exists
     if (-not (Test-Path -Path $OutputFolder)) {
+        Write-Verbose "Creating output directory: $OutputFolder"
         New-Item -ItemType Directory -Path $OutputFolder -Force | Out-Null
     }
 
     $FullSource = (Resolve-Path -Path $SourceFolder).Path
     $FullOutput = (Resolve-Path -Path $OutputFolder).Path
+
+    # Ensure setup file exists in source folder
+    $FullSetupFile = Join-Path $FullSource $SetupFile
+    if (-not (Test-Path -Path $FullSetupFile)) {
+        Write-Error "Setup file '$SetupFile' not found in source folder '$FullSource'."
+        return $false
+    }
 
     Write-Verbose "Creating .intunewin package for '$SetupFile' from '$FullSource'..."
     
@@ -51,8 +63,15 @@ function New-IntuneWinPackage {
     try {
         $Process = Start-Process -FilePath $ExePath -ArgumentList $Args -Wait -NoNewWindow -PassThru -ErrorAction Stop
         if ($Process.ExitCode -eq 0) {
-            Write-Verbose "Successfully created .intunewin package in '$FullOutput'."
-            return $true
+            # Find the generated file to return its path
+            $ExpectedFileName = [System.IO.Path]::ChangeExtension($SetupFile, ".intunewin")
+            # Note: IntuneWinAppUtil usually names it after the setup file, but sometimes after the folder?
+            # Actually it's always <setupfile_base>.intunewin
+            
+            $GeneratedFile = Get-ChildItem -Path $FullOutput -Filter "*.intunewin" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            
+            Write-Verbose "Successfully created .intunewin package: $($GeneratedFile.FullName)"
+            return $GeneratedFile.FullName
         } else {
             Write-Error "IntuneWinAppUtil failed with exit code $($Process.ExitCode)."
             return $false
