@@ -8,7 +8,7 @@ This tool leverages the [Evergreen](https://github.com/steve0hun/Evergreen) Powe
 
 - **Automated Discovery:** Continuously monitors for new application versions using the `Evergreen` module.
 - **Smart Sync:** Only downloads new or missing installers, saving bandwidth and storage.
-- **Structured Organization:** Organizes installers into a clean `<RootPath>\<Publisher>\<Application>\<Channel>\<Version>\<Architecture>` hierarchy.
+- **Structured Organization:** Organizes installers into a clean `Installers\<Publisher>\<Application>\<Channel>\<Version>\<Architecture>` hierarchy.
 - **Automated PSADT Wrapping:** Automatically stages a PSADT template for each download and injects correct metadata (Name, Vendor, Version) and install commands.
 - **Intune-Ready Preparation:** Converts generated PSADT packages into descriptive `.intunewin` files (e.g., `Google_Chrome_121.0.6167.140_x64.intunewin`).
 - **Resilient Execution:** Built-in retry logic with exponential backoff for network-related failures.
@@ -84,6 +84,7 @@ Run the main synchronization script from an elevated PowerShell prompt:
     - `Find-EvergreenLibraryApp.ps1`: Search for Evergreen applications.
     - `Test-EvergreenLibraryFilter.ps1`: Interactively test filters.
     - `Add-EvergreenLibraryApp.ps1`: Automatically update manifest.
+- `Installers\`: Dedicated directory for raw application downloads.
 - `Packages\`: Output directory for generated PSADT packages.
 - `Packages\IntuneWin\`: Output directory for final `.intunewin` files.
 - `Tools\`: Recommended location for `IntuneWinAppUtil.exe`.
