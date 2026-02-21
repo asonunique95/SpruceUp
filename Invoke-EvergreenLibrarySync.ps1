@@ -23,10 +23,12 @@ if (-not (Get-Module -Name "Evergreen")) { Import-Module -Name "Evergreen" }
 # Import the library functions
 $ScriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 . (Join-Path $ScriptPath "Scripts\LibraryFunctions.ps1")
+. (Join-Path $ScriptPath "Scripts\PSADTFunctions.ps1")
 
 # 2. Setup Paths
 $FullConfigPath = Join-Path $LibraryPath $ConfigFile
 $FullLogPath = Join-Path $LibraryPath $LogFile
+$PackagesPath = Join-Path $LibraryPath "Packages"
 
 # 3. Load Manifest
 try {
@@ -58,8 +60,29 @@ foreach ($App in $Apps) {
         if ($null -ne $SyncResult) {
             if ($SyncResult.NewDownload) {
                 Write-Host "New version (v$($SyncResult.Version)) downloaded." -ForegroundColor Green
-                $Status = "Success"
-                $Message = "New version downloaded"
+                
+                # --- PSADT PACKAGING ---
+                Write-Host "  -> Creating PSADT package... " -NoNewline
+                try {
+                    $PackageName = Get-PSADTPackageName -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture
+                    $PackageFolder = Join-Path $PackagesPath $PackageName
+                    
+                    Copy-PSADTTemplate -DestinationPath $PackageFolder -Verbose:$VerbosePreference | Out-Null
+                    Stage-PSADTInstaller -InstallerPath $SyncResult.Path -DestinationPackagePath $PackageFolder -Verbose:$VerbosePreference | Out-Null
+                    Set-PSADTAppHeader -PackagePath $PackageFolder -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture -Verbose:$VerbosePreference | Out-Null
+                    Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName (Split-Path $SyncResult.Path -Leaf) -Verbose:$VerbosePreference | Out-Null
+                    
+                    Write-Host "Done." -ForegroundColor DarkGreen
+                    $Status = "Success"
+                    $Message = "New version downloaded and PSADT package created: $PackageName"
+                }
+                catch {
+                    Write-Host "Failed!" -ForegroundColor Red
+                    Write-Host "     -> $($_.Exception.Message)" -ForegroundColor Red
+                    $Status = "Partial Success"
+                    $Message = "New version downloaded but PSADT packaging failed: $($_.Exception.Message)"
+                }
+                # -----------------------
             }
             else {
                 Write-Host "Up to date (v$($SyncResult.Version))." -ForegroundColor Gray
