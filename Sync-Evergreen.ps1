@@ -2,13 +2,24 @@ $LibraryPath = "C:\Evergreen"
 $ConfigFile = Join-Path $LibraryPath "EvergreenLibrary.json"
 $LogFile = Join-Path $LibraryPath "EvergreenSyncLog.csv"
 
-# Check if the config file exists
+# 1. Check for Evergreen Module
+if (-not (Get-Module -ListAvailable -Name "Evergreen")) {
+    Write-Error "The 'Evergreen' module is not installed. Please run: Install-Module -Name Evergreen -Scope CurrentUser"
+    return
+}
+
+if (-not (Get-Module -Name "Evergreen")) {
+    Write-Host "Importing Evergreen module..." -ForegroundColor Gray
+    Import-Module -Name "Evergreen"
+}
+
+# 2. Check for Configuration
 if (-not (Test-Path $ConfigFile)) {
     Write-Error "Could not find EvergreenLibrary.json at $ConfigFile"
     return
 }
 
-# Load the configuration
+# 3. Load the configuration
 $Config = Get-Content $ConfigFile | ConvertFrom-Json
 $Apps = $Config.Applications
 $Total = $Apps.Count
@@ -19,30 +30,32 @@ Write-Host "`nStarting Evergreen Library Update for $Total applications..." -For
 
 foreach ($App in $Apps) {
     $Index++
-    $Processed = $false
     
     Write-Progress -Activity "Evergreen Library Sync" `
                    -Status "Checking: $($App.Name) ($Index of $Total)" `
                    -PercentComplete (($Index / $Total) * 100)
 
     try {
-        $AppDetails = Get-EvergreenApp -Name $App.EvergreenApp
+        Write-Host "Syncing $($App.Name)... " -NoNewline -ForegroundColor White
+        
+        # Suppress internal module warnings
+        $AppDetails = Get-EvergreenApp -Name $App.EvergreenApp -WarningAction SilentlyContinue
+        
         $FilterScript = [scriptblock]::Create($App.Filter)
+        
+        # Filter, then sort by version descending and pick the latest one only
         $FilteredApp = $AppDetails | Where-Object {
             $inputObject = $_
             & $FilterScript
-        }
+        } | Sort-Object Version -Descending | Select-Object -First 1
 
         if ($FilteredApp) {
-            $AppRoot = Join-Path $LibraryPath "Apps"
-            
-            # Save-EvergreenApp execution
-            $SavedFiles = $FilteredApp | Save-EvergreenApp -Path $AppRoot
+            $AppFolder = Join-Path $LibraryPath $App.Name
+            $SavedFiles = $FilteredApp | Save-EvergreenApp -Path $AppFolder -WarningAction SilentlyContinue
             
             if ($null -ne $SavedFiles) {
-                $Processed = $true
+                Write-Host "Done (v$($FilteredApp.Version))." -ForegroundColor Green
                 foreach ($File in $SavedFiles) {
-                    # Handle both strings and objects returned by the module
                     $PathToLog = if ($File.Path) { $File.Path } else { $File.ToString() }
                     
                     if (Test-Path $PathToLog) {
@@ -50,7 +63,7 @@ foreach ($App in $Apps) {
                         $FileName = $FileInfo.Name
                         $SizeMB = [math]::Round($FileInfo.Length / 1MB, 2)
                         
-                        Write-Host "[OK] $($App.Name) ($FileName) - $($SizeMB)MB" -ForegroundColor Green
+                        Write-Host "  -> Saved: $FileName ($($SizeMB)MB)" -ForegroundColor DarkGreen
                         
                         $Results += [PSCustomObject]@{
                             Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -59,13 +72,12 @@ foreach ($App in $Apps) {
                             FileName  = $FileName
                             SizeMB    = $SizeMB
                             Path      = $PathToLog
-                            Message   = "File synced successfully"
+                            Message   = "v$($FilteredApp.Version) synced successfully"
                         }
                     }
                 }
             } else {
-                # If SavedFiles is null, it usually means UNCHANGED
-                Write-Host "[-] $($App.Name) is already up to date." -ForegroundColor Gray
+                Write-Host "Up to date." -ForegroundColor Gray
                 $Results += [PSCustomObject]@{
                     Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
                     AppName   = $App.Name
@@ -73,12 +85,11 @@ foreach ($App in $Apps) {
                     FileName  = "Existing"
                     SizeMB    = 0
                     Path      = "N/A"
-                    Message   = "File is already up to date"
+                    Message   = "v$($FilteredApp.Version) is already up to date"
                 }
-                $Processed = $true
             }
         } else {
-            Write-Warning "No version found for $($App.Name) matching filter."
+            Write-Host "Filtered." -ForegroundColor Yellow
             $Results += [PSCustomObject]@{
                 Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
                 AppName   = $App.Name
@@ -88,11 +99,11 @@ foreach ($App in $Apps) {
                 Path      = "N/A"
                 Message   = "No version found matching filter"
             }
-            $Processed = $true
         }
     }
     catch {
-        Write-Host "[ERROR] Failed to update $($App.Name): $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "Error!" -ForegroundColor Red
+        Write-Host "[ERROR] $($_.Exception.Message)" -ForegroundColor Red
         $Results += [PSCustomObject]@{
             Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
             AppName   = $App.Name
@@ -102,7 +113,6 @@ foreach ($App in $Apps) {
             Path      = "N/A"
             Message   = $_.Exception.Message
         }
-        $Processed = $true
     }
 }
 

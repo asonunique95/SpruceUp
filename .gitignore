@@ -1,24 +1,19 @@
-# Ignore large installer files
-Apps/
-MicrosoftEdge/
-GoogleChrome/
-7Zip/
-NotepadPlusPlus/
-WinSCP/
-PuTTY/
-Wireshark/
-VSCode/
-WinDirStat/
-SpyderIDE/
-Python/
-PyCharm/
-Git/
-AdobeAcrobatPro/
+# Ignore everything by default
+/*
 
-# Ignore log files
-*.csv
-*.log
+# But allow these specific files/patterns
+!EvergreenLibrary.json
+!Sync-Evergreen.ps1
+!Evergreen-Research.md
+!.gitignore
+!*.html
+!*.py
 
-# Ignore OS files
+# Keep folders but ignore contents
+!*/
+
+# Explicitly ignore common clutter
 Thumbs.db
 .DS_Store
+*.csv
+*.log

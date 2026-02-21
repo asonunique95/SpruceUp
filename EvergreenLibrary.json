@@ -33,12 +33,12 @@
         {
             "Name": "Wireshark",
             "EvergreenApp": "Wireshark",
-            "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
+            "Filter": "$_.Release -eq 'Stable' -and $_.Architecture -eq 'x64' -and $_.Type -eq 'msi'"
         },
         {
             "Name": "VSCode",
             "EvergreenApp": "MicrosoftVisualStudioCode",
-            "Filter": "$_.Architecture -eq 'x64'"
+            "Filter": "$_.Platform -notlike '*user' -and $_.Channel -eq 'Stable' -and $_.Architecture -eq 'x64'"
         },
         {
             "Name": "WinDirStat",
@@ -56,14 +56,19 @@
             "Filter": "$_.Architecture -eq 'x64'"
         },
         {
-            "Name": "PyCharm",
+            "Name": "PyCharmCommunity",
             "EvergreenApp": "JetBrainsPyCharm",
-            "Filter": "$_.Architecture -eq 'x64'"
+            "Filter": "$_.Edition -eq 'PyCharm Community'"
+        },
+        {
+            "Name": "PyCharmProfessional",
+            "EvergreenApp": "JetBrainsPyCharm",
+            "Filter": "$_.Edition -eq 'PyCharm Professional'"
         },
         {
             "Name": "Git",
             "EvergreenApp": "GitForWindows",
-            "Filter": "$_.Architecture -eq 'x64'"
+            "Filter": "$_.Architecture -eq 'x64' -and $_.Type -eq 'exe'"
         },
         {
             "Name": "AdobeAcrobatPro",
