@@ -7,11 +7,11 @@
     - [x] Implement Feature: Ensure property schema is displayed clearly for single matches. f889dda
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Robust Application Discovery' (Protocol in workflow.md)** c25ff24
 
-## Phase 2: Enhanced Metadata Visibility
-- [ ] **Task: Refactor Test-EvergreenLibraryFilter.ps1**
-    - [ ] Implement Feature: Update the output table to include more metadata columns if available.
-    - [ ] Implement Feature: Add a "Matched Metadata Summary" that shows Vendor/Publisher and other key fields from the first result.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2: Enhanced Metadata Visibility' (Protocol in workflow.md)**
+## Phase 2: Enhanced Metadata Visibility [checkpoint: 3a9e296]
+- [x] **Task: Refactor Test-EvergreenLibraryFilter.ps1** f1b864b
+    - [x] Implement Feature: Update the output table to include more metadata columns if available. f1b864b
+    - [x] Implement Feature: Add a "Matched Metadata Summary" that shows Vendor/Publisher and other key fields from the first result. f1b864b
+- [x] **Task: Conductor - User Manual Verification 'Phase 2: Enhanced Metadata Visibility' (Protocol in workflow.md)** 3a9e296
 
 ## Phase 3: Final Polishing & Documentation
 - [ ] **Task: Update Add-EvergreenLibraryApp.ps1**
