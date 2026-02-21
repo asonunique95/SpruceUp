@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Automate .intunewin conversion for PSADT packages**
+- [x] **Track: Automate .intunewin conversion for PSADT packages**
   *Link: [./tracks/intunewin_conversion_automation_20260221/](./tracks/intunewin_conversion_automation_20260221/)*
