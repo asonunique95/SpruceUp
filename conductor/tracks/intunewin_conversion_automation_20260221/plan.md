@@ -16,8 +16,8 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 2: Advanced Conversion and Error Handling' (Protocol in workflow.md)** 7a2379c
 
 ## Phase 3: Integration into Main Sync Script
-- [ ] **Task: Integrate Conversion into Main Sync**
-    - [ ] Implement Feature: Update `Invoke-EvergreenLibrarySync.ps1` to automatically trigger `.intunewin` conversion after successful PSADT packaging.
-- [ ] **Task: Update Logging for Conversion**
-    - [ ] Implement Feature: Update `Write-EvergreenSyncLog` to record the status and path of the generated `.intunewin` file.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 3: Integration into Main Sync Script' (Protocol in workflow.md)**
+- [x] **Task: Integrate Conversion into Main Sync** adbb47e
+    - [x] Implement Feature: Update `Invoke-EvergreenLibrarySync.ps1` to automatically trigger `.intunewin` conversion after successful PSADT packaging. adbb47e
+- [x] **Task: Update Logging for Conversion** adbb47e
+    - [x] Implement Feature: Update `Write-EvergreenSyncLog` to record the status and path of the generated `.intunewin` file. adbb47e
+- [~] **Task: Conductor - User Manual Verification 'Phase 3: Integration into Main Sync Script' (Protocol in workflow.md)**
