@@ -15,6 +15,7 @@
 !Scripts/*.ps1
 !conductor/
 !Tests/
+!Tools/
 
 # Keep folders but ignore contents
 !*/
