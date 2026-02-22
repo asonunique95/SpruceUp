@@ -61,6 +61,26 @@ Finally, use `Add-EvergreenLibraryApp.ps1` to register the application. It autom
 
 ---
 
+## Customizing Deployment
+
+For more advanced scenarios, you can customize the installation and uninstallation logic by editing `DeploymentConfig.json`. This file allows you to specify custom PSADT commands and a list of processes that should be closed before installation.
+
+### Configuration Structure
+```json
+"AppName": {
+    "Vendor": "Publisher Name",
+    "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\installer.msi\" -Action Install",
+    "UninstallCommand": "Execute-MSI -Action Uninstall -Path \"{ProductCode}\"",
+    "ProcessesToClose": ["process1", "process2"]
+}
+```
+
+- **InstallCommand:** The full PowerShell command injected into the `Install` phase.
+- **UninstallCommand:** The full PowerShell command injected into the `Uninstall` phase.
+- **ProcessesToClose:** An array of process names (without .exe) to be terminated by the PSADT toolkit.
+
+---
+
 ## Controlling the Pipeline
 
 By default, the sync script performs the full end-to-end process. You can use the `-StopAtPhase` parameter to stop earlier if you only want to download installers or create PSADT packages without converting them to Intune.
