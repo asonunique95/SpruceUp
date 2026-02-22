@@ -7,10 +7,10 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Unified Logging Core' (Protocol in workflow.md)**
 
 ## Phase 2: Pipeline Refactoring
-- [ ] **Task: Update Invoke-EvergreenLibrarySync.ps1**
-    - [ ] Implement Feature: Replace all `Write-Host` and old logging calls with `Write-SpruceLog`. Ensure discovery, download, and conversion steps are individually logged.
-- [ ] **Task: Update Invoke-LocalPackageSync.ps1**
-    - [ ] Implement Feature: Integrate `Write-SpruceLog` into the manual import process.
+- [x] **Task: Update Invoke-EvergreenLibrarySync.ps1** f33c4ed
+    - [x] Implement Feature: Replace all `Write-Host` and old logging calls with `Write-SpruceLog`. Ensure discovery, download, and conversion steps are individually logged.
+- [x] **Task: Update Invoke-LocalPackageSync.ps1** f33c4ed
+    - [x] Implement Feature: Integrate `Write-SpruceLog` into the manual import process.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2: Pipeline Refactoring' (Protocol in workflow.md)**
 
 ## Phase 3: Documentation & Cleanup
