@@ -6,12 +6,12 @@
     - [x] Implement Feature: Refactor `Scripts/LibraryFunctions.ps1` or create a new script to house `Write-SpruceLog` with support for both `.log` and `.csv` outputs. a530992
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Unified Logging Core' (Protocol in workflow.md)**
 
-## Phase 2: Pipeline Refactoring
+## Phase 2: Pipeline Refactoring [checkpoint: 13cbf8d]
 - [x] **Task: Update Invoke-EvergreenLibrarySync.ps1** f33c4ed
     - [x] Implement Feature: Replace all `Write-Host` and old logging calls with `Write-SpruceLog`. Ensure discovery, download, and conversion steps are individually logged.
 - [x] **Task: Update Invoke-LocalPackageSync.ps1** f33c4ed
     - [x] Implement Feature: Integrate `Write-SpruceLog` into the manual import process.
-- [~] **Task: Conductor - User Manual Verification 'Phase 2: Pipeline Refactoring' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 2: Pipeline Refactoring' (Protocol in workflow.md)**
 
 ## Phase 3: Documentation & Cleanup
 - [ ] **Task: Update README & Docs**
