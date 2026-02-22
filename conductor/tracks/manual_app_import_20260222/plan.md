@@ -8,6 +8,6 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Core Script & Logic Integration' (Protocol in workflow.md)**
 
 ## Phase 2: Documentation & Refinement
-- [ ] **Task: Update Onboarding Guide**
-    - [ ] Implement Feature: Update `docs/ONBOARDING.md` to document the use of `Invoke-LocalPackageSync.ps1` for manual imports.
+- [x] **Task: Update Onboarding Guide** be34e2a
+    - [x] Implement Feature: Update `docs/ONBOARDING.md` to document the use of `Invoke-LocalPackageSync.ps1` for manual imports. be34e2a
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2: Documentation & Refinement' (Protocol in workflow.md)**
