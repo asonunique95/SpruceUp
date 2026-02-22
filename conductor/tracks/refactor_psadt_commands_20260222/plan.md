@@ -9,6 +9,6 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Core Logic & Config Refactoring' (Protocol in workflow.md)**
 
 ## Phase 2: System-Wide Validation
-- [ ] **Task: Verify Generated Scripts**
-    - [ ] Manual Verification: Run a sync for a representative app (e.g., GoogleChrome) and confirm the resulting `Invoke-AppDeployToolkit.ps1` uses the correct parameter naming.
+- [x] **Task: Verify Generated Scripts**
+    - [x] Manual Verification: Run a sync for a representative app (e.g., GoogleChrome) and confirm the resulting `Invoke-AppDeployToolkit.ps1` uses the correct parameter naming.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2: System-Wide Validation' (Protocol in workflow.md)**
