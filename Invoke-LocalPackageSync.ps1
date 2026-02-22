@@ -19,6 +19,9 @@ param (
     [string]$LibraryPath = "C:\Evergreen",
 
     [Parameter(Mandatory = $false)]
+    [string]$DataPath,
+
+    [Parameter(Mandatory = $false)]
     [string]$DeployConfigFile = "DeploymentConfig.json"
 )
 
@@ -33,8 +36,10 @@ $ScriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 . (Join-Path $ScriptPath "Scripts\IntuneWinFunctions.ps1")
 
 # 3. Setup Paths
+$BaseDataPath = if ([string]::IsNullOrWhiteSpace($DataPath)) { $LibraryPath } else { $DataPath }
+
 $FullDeployConfigPath = Join-Path $LibraryPath $DeployConfigFile
-$PackagesPath = Join-Path $LibraryPath "Packages"
+$PackagesPath = Join-Path $BaseDataPath "Packages"
 $IntuneWinPath = Join-Path $PackagesPath "IntuneWin"
 
 # 4. Ensure Directories Exist

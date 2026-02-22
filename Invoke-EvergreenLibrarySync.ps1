@@ -4,6 +4,9 @@ param (
     [string]$LibraryPath = "C:\Evergreen",
 
     [Parameter(Mandatory = $false)]
+    [string]$DataPath,
+
+    [Parameter(Mandatory = $false)]
     [string]$ConfigFile = "EvergreenLibrary.json",
 
     [Parameter(Mandatory = $false)]
@@ -34,11 +37,13 @@ $ScriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 . (Join-Path $ScriptPath "Scripts\IntuneWinFunctions.ps1")
 
 # 2. Setup Paths
+$BaseDataPath = if ([string]::IsNullOrWhiteSpace($DataPath)) { $LibraryPath } else { $DataPath }
+
 $FullConfigPath = Join-Path $LibraryPath $ConfigFile
 $FullDeployConfigPath = Join-Path $LibraryPath $DeployConfigFile
 $FullLogPath = Join-Path $LibraryPath $LogFile
-$InstallersPath = Join-Path $LibraryPath "Installers"
-$PackagesPath = Join-Path $LibraryPath "Packages"
+$InstallersPath = Join-Path $BaseDataPath "Installers"
+$PackagesPath = Join-Path $BaseDataPath "Packages"
 $IntuneWinPath = Join-Path $PackagesPath "IntuneWin"
 
 # 3. Ensure Directories Exist
@@ -74,7 +79,7 @@ foreach ($App in $Apps) {
     Write-Host "Processing $($App.Name)... " -NoNewline
     
     try {
-        $SyncResult = Sync-EvergreenLibraryApp -AppConfig $App -LibraryPath $LibraryPath -Verbose:$VerbosePreference
+        $SyncResult = Sync-EvergreenLibraryApp -AppConfig $App -LibraryPath $LibraryPath -DataPath $DataPath -Verbose:$VerbosePreference
 
         if ($null -ne $SyncResult) {
             if ($SyncResult.NewDownload) {

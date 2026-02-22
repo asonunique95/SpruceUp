@@ -58,7 +58,9 @@ function Sync-EvergreenLibraryApp {
         [Parameter(Mandatory = $true)]
         [PSCustomObject]$AppConfig,
         [Parameter(Mandatory = $true)]
-        [string]$LibraryPath
+        [string]$LibraryPath,
+        [Parameter(Mandatory = $false)]
+        [string]$DataPath
     )
 
     $AppName = $AppConfig.Name
@@ -73,7 +75,9 @@ function Sync-EvergreenLibraryApp {
     }
 
     # 2. Build root folder for the application
-    $AppRoot = Join-Path $LibraryPath "Installers"
+    # Use DataPath for storage if provided, otherwise fallback to LibraryPath
+    $BaseStoragePath = if ([string]::IsNullOrWhiteSpace($DataPath)) { $LibraryPath } else { $DataPath }
+    $AppRoot = Join-Path $BaseStoragePath "Installers"
     $AppRoot = Join-Path $AppRoot $Publisher
     $AppRoot = Join-Path $AppRoot $AppName
 
