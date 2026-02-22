@@ -7,5 +7,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [x] **Track: Refactor deployment configuration to use dynamic installer placeholders**
   *Link: [./tracks/dynamic_installer_placeholders_20260221/](./tracks/dynamic_installer_placeholders_20260221/)*
 
-- [ ] **Track: Refactor PSADT Deployment Commands**
+- [~] **Track: Refactor PSADT Deployment Commands**
   *Link: [./tracks/refactor_psadt_commands_20260222/](./tracks/refactor_psadt_commands_20260222/)*
