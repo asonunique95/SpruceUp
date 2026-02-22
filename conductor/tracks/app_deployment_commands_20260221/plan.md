@@ -14,7 +14,7 @@
     - [x] Implement Feature: Pass app-specific commands and process lists to the packaging functions. 32c1843
 - [x] **Task: Conductor - User Manual Verification 'Phase 2: Pipeline Integration & Refactoring' (Protocol in workflow.md)** 3191359
 
-## Phase 3: Documentation & Expansion
-- [ ] **Task: Update Onboarding Guide**
-    - [ ] Implement Feature: Update `docs/ONBOARDING.md` to explain how to define custom commands in `DeploymentConfig.json`.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 3: Documentation & Expansion' (Protocol in workflow.md)**
+## Phase 3: Documentation & Expansion [checkpoint: 4318373]
+- [x] **Task: Update Onboarding Guide** 8571531
+    - [x] Implement Feature: Update `docs/ONBOARDING.md` to explain how to define custom commands in `DeploymentConfig.json`. 8571531
+- [x] **Task: Conductor - User Manual Verification 'Phase 3: Documentation & Expansion' (Protocol in workflow.md)** 4318373
