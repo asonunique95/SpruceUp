@@ -186,6 +186,8 @@ function Set-PSADTUninstallCommand {
         [Parameter(Mandatory = $true)]
         [string]$PackagePath,
         [Parameter(Mandatory = $true)]
+        [string]$InstallerName,
+        [Parameter(Mandatory = $false)]
         [string]$CustomCommand
     )
 
@@ -197,10 +199,23 @@ function Set-PSADTUninstallCommand {
 
     $Content = Get-Content -Path $ScriptFile -Raw
 
+    $UninstallCommand = ""
+    if (-not [string]::IsNullOrWhiteSpace($CustomCommand)) {
+        # Dynamically replace the {InstallerName} placeholder if it exists in the custom command
+        $UninstallCommand = $CustomCommand -replace '\{InstallerName\}', $InstallerName
+    } else {
+        $Extension = [System.IO.Path]::GetExtension($InstallerName).ToLower()
+        $UninstallCommand = if ($Extension -eq ".msi") {
+            'Start-ADTMsiProcess -Action Uninstall -FilePath "$PSScriptRoot\Files\{0}" -ArgumentList "/qn /norestart"' -f $InstallerName
+        } else {
+            'Start-ADTProcess -FilePath "$PSScriptRoot\Files\{0}" -ArgumentList "/uninstall"' -f $InstallerName
+        }
+    }
+
     Write-Verbose "Injecting uninstall command into '$ScriptFile'..."
     
     $Placeholder = "## <Perform Uninstallation tasks here>"
-    $NewContent = "`t$CustomCommand"
+    $NewContent = "`t$UninstallCommand"
     
     $Content = $Content -replace [regex]::Escape($Placeholder), $NewContent
 

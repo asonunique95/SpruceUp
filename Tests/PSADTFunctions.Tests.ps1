@@ -60,3 +60,60 @@ $Placeholder
         $UpdatedContent | Should -Contain $ExpectedCommand
     }
 }
+
+Describe "Set-PSADTUninstallCommand" {
+    $TempPath = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [guid]::NewGuid().ToString())
+    $ScriptFile = [System.IO.Path]::Combine($TempPath, "Invoke-AppDeployToolkit.ps1")
+    $Placeholder = "## <Perform Uninstallation tasks here>"
+
+    BeforeAll {
+        New-Item -ItemType Directory -Path $TempPath -Force | Out-Null
+    }
+
+    AfterAll {
+        Remove-Item -Path $TempPath -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    BeforeEach {
+        $InitialContent = @"
+# Some header content
+$Placeholder
+# Some footer content
+"@
+        $InitialContent | Out-File -FilePath $ScriptFile -Encoding utf8 -Force
+    }
+
+    It "Replaces {InstallerName} placeholder in CustomCommand with actual InstallerName" {
+        $CustomCommand = 'Start-ADTProcess -FilePath "$PSScriptRoot\Files\{InstallerName}" -ArgumentList "/uninstall /S"'
+        $InstallerName = "MyInstaller_v1.0.exe"
+        
+        $Result = Set-PSADTUninstallCommand -PackagePath $TempPath -InstallerName $InstallerName -CustomCommand $CustomCommand
+        
+        $Result | Should -Be $true
+        $UpdatedContent = Get-Content -Path $ScriptFile -Raw
+        $ExpectedCommand = "`tStart-ADTProcess -FilePath "`$PSScriptRoot\Files\MyInstaller_v1.0.exe" -ArgumentList "/uninstall /S""
+        $UpdatedContent | Should -Contain $ExpectedCommand
+    }
+
+    It "Uses default MSI uninstall command when no CustomCommand is provided and extension is .msi" {
+        $InstallerName = "App.msi"
+        
+        $Result = Set-PSADTUninstallCommand -PackagePath $TempPath -InstallerName $InstallerName
+        
+        $Result | Should -Be $true
+        $UpdatedContent = Get-Content -Path $ScriptFile -Raw
+        $ExpectedCommand = "`tStart-ADTMsiProcess -Action Uninstall -FilePath "`$PSScriptRoot\Files\App.msi" -ArgumentList "/qn /norestart""
+        $UpdatedContent | Should -Contain $ExpectedCommand
+    }
+
+    It "Uses generic EXE uninstall command when no CustomCommand is provided and extension is .exe" {
+        $InstallerName = "App.exe"
+        
+        $Result = Set-PSADTUninstallCommand -PackagePath $TempPath -InstallerName $InstallerName
+        
+        $Result | Should -Be $true
+        $UpdatedContent = Get-Content -Path $ScriptFile -Raw
+        $ExpectedCommand = "`tStart-ADTProcess -FilePath "`$PSScriptRoot\Files\App.exe" -ArgumentList "/uninstall""
+        $UpdatedContent | Should -Contain $ExpectedCommand
+    }
+}
