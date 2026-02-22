@@ -8,6 +8,8 @@ This tool leverages the [Evergreen](https://github.com/steve0hun/Evergreen) Powe
 
 - **Automated Discovery:** Continuously monitors for new application versions using the `Evergreen` module.
 - **Smart Sync:** Only downloads new or missing installers, saving bandwidth and storage.
+- **Manual Sideloading:** Easily wrap local installers (not tracked by Evergreen) into the automated PSADT/IntuneWin pipeline.
+- **External Storage Support:** Redirect high-volume data (Installers, Packages) to external drives or SMB shares while keeping config files local.
 - **Structured Organization:** Organizes installers into a clean `Installers\<Publisher>\<Application>\<Channel>\<Version>\<Architecture>` hierarchy.
 - **Automated PSADT Wrapping:** Automatically stages a PSADT template for each download and injects correct metadata (Name, Vendor, Version) and install commands.
 - **Intune-Ready Preparation:** Converts generated PSADT packages into descriptive `.intunewin` files (e.g., `Google_Chrome_121.0.6167.140_x64.intunewin`).
@@ -66,13 +68,29 @@ Run the main synchronization script from an elevated PowerShell prompt:
 
 # Specify custom config and log locations
 .\Invoke-EvergreenLibrarySync.ps1 -ConfigFile "MyApps.json" -LogFile "Sync.csv"
+
+# Sync to an external drive or SMB share
+.\Invoke-EvergreenLibrarySync.ps1 -DataPath "X:\EvergreenData"
+```
+
+### Sideloading Local Packages
+For apps not tracked by Evergreen (e.g. internal LOB apps), use the local sync script:
+
+```powershell
+.\Invoke-LocalPackageSync.ps1 -AppName "MyCustomApp" `
+                             -Vendor "InternalIT" `
+                             -Version "2.1.0" `
+                             -SourcePath "C:\Downloads\setup.exe"
 ```
 
 ### System Architecture
 For a visual overview of how the pipeline, manifests, and deployment configurations interact, see the **[System Workflow Diagram](docs/WORKFLOW_DIAGRAM.md)**.
 
 ### Script Parameters
-- `-LibraryPath`: The root directory for your application repository (Default: `C:\Evergreen`).
+- `-LibraryPath`: The directory containing your configuration files (Default: `C:\Evergreen`).
+- `-DataPath`: The root directory for storing heavy data (Installers and Packages).
+- `-InstallersPath`: (Optional) Explicit override for the Installers directory.
+- `-PackagesPath`: (Optional) Explicit override for the Packages directory.
 - `-ConfigFile`: Path to your JSON manifest (Default: `EvergreenLibrary.json`).
 - `-LogFile`: Path to the CSV log file (Default: `EvergreenSyncLog.csv`).
 - `-AppName`: (Optional) Limit the sync to a single application by name.
@@ -80,7 +98,8 @@ For a visual overview of how the pipeline, manifests, and deployment configurati
 
 ## 📁 Project Structure
 
-- `Invoke-EvergreenLibrarySync.ps1`: The primary entry point orchestrating the entire pipeline.
+- `Invoke-EvergreenLibrarySync.ps1`: The primary entry point for automated Evergreen apps.
+- `Invoke-LocalPackageSync.ps1`: Entry point for manual sideloading of local installers.
 - `Scripts\`:
     - `LibraryFunctions.ps1`: Discovery and retrieval logic.
     - `PSADTFunctions.ps1`: PSADT packaging and metadata injection.
