@@ -10,4 +10,4 @@
 ## Phase 2: Documentation & Testing [checkpoint: 0f8c316]
 - [x] **Task: Update Onboarding Guide** 0f8c316
     - [x] Implement Feature: Update `docs/ONBOARDING.md` to document the use of the `-DataPath` parameter for external storage and SMB shares. 0f8c316
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2: Documentation & Testing' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 2: Documentation & Testing' (Protocol in workflow.md)**
