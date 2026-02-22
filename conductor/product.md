@@ -19,6 +19,7 @@ The project aims to develop a PowerShell-based automation tool that leverages th
 - **Version Tracking:** Continuously monitor for new application versions and automatically initiate downloads.
 - **Configurable Pipeline:** Use the `-StopAtPhase` parameter to control how far an application proceeds through the packaging and conversion flow.
 - **Granular Deployment Customization:** Define application-specific installation and uninstallation commands, and specify processes to close, via `DeploymentConfig.json`.
+- **Automated Uninstallation Logic:** Automatically generate correct uninstallation commands for MSI-based installers using the local installer file, reducing manual configuration overhead.
 - **Manual Application Sideloading:** Wrap local installers that are not tracked by the Evergreen module into the automated PSADT and IntuneWin pipeline.
 - **External Storage Support:** Redirect high-volume data (Installers, Packages, and IntuneWin files) to external drives or SMB shares while keeping configuration and scripts local.
 - **Streamlined Onboarding:** Specialized helper scripts, interactive filter testing, and documentation to simplify adding new applications to the library.
