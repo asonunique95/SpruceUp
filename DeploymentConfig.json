@@ -2,7 +2,6 @@
   "MicrosoftEdge": {
     "Vendor": "Microsoft",
     "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\{InstallerName}\" -Action Install -ArgumentList \"/qn /norestart\"",
-    "UninstallCommand": "Execute-MSI -Action Uninstall -Path \"{ProductCode}\"",
     "ProcessesToClose": [
       "msedge"
     ]
@@ -10,7 +9,6 @@
   "GoogleChrome": {
     "Vendor": "Google",
     "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\{InstallerName}\" -Action Install -ArgumentList \"/qn /norestart\"",
-    "UninstallCommand": "Execute-MSI -Action Uninstall -Path \"{ProductCode}\"",
     "ProcessesToClose": [
       "chrome"
     ]
@@ -18,7 +16,6 @@
   "7Zip": {
     "Vendor": "Igor Pavlov",
     "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\{InstallerName}\" -Action Install -ArgumentList \"/qn /norestart\"",
-    "UninstallCommand": "Execute-MSI -Action Uninstall -Path \"{ProductCode}\"",
     "ProcessesToClose": [
       "7zFM",
       "7zG"
@@ -45,7 +42,6 @@
   "PuTTY": {
     "Vendor": "Simon Tatham",
     "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\{InstallerName}\" -Action Install -ArgumentList \"/qn /norestart\"",
-    "UninstallCommand": "Execute-MSI -Action Uninstall -Path \"{ProductCode}\"",
     "ProcessesToClose": [
       "putty",
       "pageant",
