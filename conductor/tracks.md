@@ -6,3 +6,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: Refactor deployment configuration to use dynamic installer placeholders**
   *Link: [./tracks/dynamic_installer_placeholders_20260221/](./tracks/dynamic_installer_placeholders_20260221/)*
+
+- [ ] **Track: Automated MSI Uninstallation Logic**
+  *Link: [./tracks/automated_msi_uninstall_20260222/](./tracks/automated_msi_uninstall_20260222/)*

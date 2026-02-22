@@ -1,0 +1,8 @@
+{
+  "track_id": "automated_msi_uninstall_20260222",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-22T15:30:00Z",
+  "updated_at": "2026-02-22T15:30:00Z",
+  "description": "when an installer is an msi, we still use start-adtmsiprocess but -action becomes uninstall and it still looks in the same place for filepath. (only when the installer is an msi)"
+}
