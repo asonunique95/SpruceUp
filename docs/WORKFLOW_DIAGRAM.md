@@ -16,9 +16,9 @@ graph TD
 
     subgraph "3. Configuration Phase"
         F[(DeploymentConfig.json)] -.->|Read Custom Commands| B
-        B -->|Inject Metadata| G{Placeholder Logic}
+        B -->|Inject Metadata| G(Placeholder Logic)
         E -->|Get Filename| G
-        G -->|Replace "{InstallerName}"| H[Final PSADT Script]
+        G -->|Replace InstallerName| H[Final PSADT Script]
     end
 
     subgraph "4. Packaging Phase"
