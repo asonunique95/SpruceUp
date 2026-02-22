@@ -19,7 +19,10 @@ param (
     [string]$DeployConfigFile = "DeploymentConfig.json",
 
     [Parameter(Mandatory = $false)]
-    [string]$LogFile = "EvergreenSyncLog.csv",
+    [string]$TextLog = "SpruceUp.log",
+
+    [Parameter(Mandatory = $false)]
+    [string]$SummaryLog = "SyncSummary.csv",
 
     [Parameter(Mandatory = $false)]
     [string]$AppName,
@@ -43,10 +46,11 @@ $ScriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 . (Join-Path $ScriptPath "Scripts\IntuneWinFunctions.ps1")
 
 # 2. Setup Paths
-# Root config files always stay in the local LibraryPath
+# Root config and log files always stay in the local LibraryPath
 $FullConfigPath = Join-Path $LibraryPath $ConfigFile
 $FullDeployConfigPath = Join-Path $LibraryPath $DeployConfigFile
-$FullLogPath = Join-Path $LibraryPath $LogFile
+$FullTextLogPath = Join-Path $LibraryPath $TextLog
+$FullSummaryLogPath = Join-Path $LibraryPath $SummaryLog
 
 # Heavy data locations: Order of precedence is: 
 # 1. Specific param (-InstallersPath / -PackagesPath)
@@ -91,27 +95,27 @@ if ($AppName) {
 }
 
 # 6. Process Applications
-Write-Host "Starting Evergreen Library Sync for $($Apps.Count) applications..." -ForegroundColor Cyan
+Write-SpruceLog -Message "Starting Evergreen Library Sync for $($Apps.Count) applications..." -Level "INFO" -LogFile $FullTextLogPath
 
 foreach ($App in $Apps) {
-    Write-Host "Processing $($App.Name)... " -NoNewline
+    Write-SpruceLog -Message "Processing $($App.Name)..." -Level "INFO" -LogFile $FullTextLogPath
     
     try {
         $SyncResult = Sync-EvergreenLibraryApp -AppConfig $App -LibraryPath $LibraryPath -DataPath $FinalInstallersPath -Verbose:$VerbosePreference
 
         if ($null -ne $SyncResult) {
             if ($SyncResult.NewDownload) {
-                Write-Host "New version (v$($SyncResult.Version)) downloaded." -ForegroundColor Green
+                Write-SpruceLog -Message "New version (v$($SyncResult.Version)) downloaded." -Level "INFO" -LogFile $FullTextLogPath
                 
                 $Status = "Success"
                 $Message = "New version downloaded"
 
                 if ($StopAtPhase -eq "Download") {
-                    Write-Host "  -> Stopping at Download phase as requested." -ForegroundColor Gray
+                    Write-SpruceLog -Message "  -> Stopping at Download phase as requested." -Level "INFO" -LogFile $FullTextLogPath
                 }
                 else {
                     # --- PSADT PACKAGING ---
-                    Write-Host "  -> Creating PSADT package... " -NoNewline
+                    Write-SpruceLog -Message "  -> Creating PSADT package..." -Level "INFO" -LogFile $FullTextLogPath
                     try {
                         $PackageName = Get-PSADTPackageName -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture
                         $PackageFolder = Join-Path $FinalPackagesPath $PackageName
@@ -129,15 +133,15 @@ foreach ($App in $Apps) {
                         Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName $InstallerFileName -CustomCommand $CustomInstall -Verbose:$VerbosePreference | Out-Null
                         Set-PSADTUninstallCommand -PackagePath $PackageFolder -InstallerName $InstallerFileName -CustomCommand $CustomUninstall -Verbose:$VerbosePreference | Out-Null
 
-                        Write-Host "Done." -ForegroundColor DarkGreen
+                        Write-SpruceLog -Message "Done." -Level "INFO" -LogFile $FullTextLogPath
                         $Message = "New version downloaded and PSADT package created: $PackageName"
 
                         if ($StopAtPhase -eq "PSADT") {
-                            Write-Host "  -> Stopping at PSADT phase as requested." -ForegroundColor Gray
+                            Write-SpruceLog -Message "  -> Stopping at PSADT phase as requested." -Level "INFO" -LogFile $FullTextLogPath
                         }
                         else {
                             # --- INTUNEWIN CONVERSION ---
-                            Write-Host "  -> Converting to .intunewin... " -NoNewline
+                            Write-SpruceLog -Message "  -> Converting to .intunewin..." -Level "INFO" -LogFile $FullTextLogPath
                             try {
                                 $IntuneWinFile = New-IntuneWinPackage -SourceFolder $PackageFolder `
                                                                      -SetupFile "Invoke-AppDeployToolkit.exe" `
@@ -146,17 +150,17 @@ foreach ($App in $Apps) {
                                                                      -Verbose:$VerbosePreference
                                 
                                 if ($IntuneWinFile) {
-                                    Write-Host "Done." -ForegroundColor DarkGreen
+                                    Write-SpruceLog -Message "Done." -Level "INFO" -LogFile $FullTextLogPath
                                     $Message = "New version downloaded, PSADT package created, and converted to .intunewin: $(Split-Path $IntuneWinFile -Leaf)"
                                 } else {
-                                    Write-Host "Failed (Tool Error)!" -ForegroundColor Red
+                                    Write-SpruceLog -Message "Failed (Tool Error)!" -Level "ERROR" -LogFile $FullTextLogPath
                                     $Status = "Partial Success"
                                     $Message = "New version downloaded and PSADT created, but .intunewin conversion failed."
                                 }
                             }
                             catch {
-                                Write-Host "Failed!" -ForegroundColor Red
-                                Write-Host "     -> $($_.Exception.Message)" -ForegroundColor Red
+                                Write-SpruceLog -Message "Failed!" -Level "ERROR" -LogFile $FullTextLogPath
+                                Write-SpruceLog -Message "     -> $($_.Exception.Message)" -Level "ERROR" -LogFile $FullTextLogPath
                                 $Status = "Partial Success"
                                 $Message = "New version downloaded and PSADT created, but .intunewin conversion errored: $($_.Exception.Message)"
                             }
@@ -164,8 +168,8 @@ foreach ($App in $Apps) {
                         }
                     }
                     catch {
-                        Write-Host "Failed!" -ForegroundColor Red
-                        Write-Host "     -> $($_.Exception.Message)" -ForegroundColor Red
+                        Write-SpruceLog -Message "Failed!" -Level "ERROR" -LogFile $FullTextLogPath
+                        Write-SpruceLog -Message "     -> $($_.Exception.Message)" -Level "ERROR" -LogFile $FullTextLogPath
                         $Status = "Partial Success"
                         $Message = "New version downloaded but PSADT packaging failed: $($_.Exception.Message)"
                     }
@@ -173,34 +177,33 @@ foreach ($App in $Apps) {
                 }
             }
             else {
-                Write-Host "Up to date (v$($SyncResult.Version))." -ForegroundColor Gray
+                Write-SpruceLog -Message "Up to date (v$($SyncResult.Version))." -Level "INFO" -LogFile $FullTextLogPath
                 $Status = "Skipped"
                 $Message = "Already up to date"
             }
 
             # Log results
-            $FileInfo = Get-Item -Path $SyncResult.Path
-            Write-EvergreenSyncLog -AppName $App.Name `
-                                   -Status $Status `
-                                   -Message $Message `
-                                   -LogFile $FullLogPath `
-                                   -FileName $FileInfo.Name `
-                                   -SizeMB ([math]::Round($FileInfo.Length/1MB, 2)) `
-                                   -Path $SyncResult.Path
+            Write-SpruceLog -Message $Message -Level "INFO" -LogFile $FullTextLogPath -CsvFile $FullSummaryLogPath -Summary @{
+                AppName = $App.Name
+                Version = $SyncResult.Version
+                Status  = $Status
+                Path    = $SyncResult.Path
+            }
         }
         else {
-            Write-Host "Skipped (no matching version found)." -ForegroundColor Yellow
+            Write-SpruceLog -Message "Skipped (no matching version found)." -Level "WARNING" -LogFile $FullTextLogPath
         }
     }
     catch {
-        Write-Host "Error!" -ForegroundColor Red
-        Write-Host "  -> $($_.Exception.Message)" -ForegroundColor Red
+        Write-SpruceLog -Message "Error! $($_.Exception.Message)" -Level "ERROR" -LogFile $FullTextLogPath
         
-        Write-EvergreenSyncLog -AppName $App.Name `
-                               -Status "Error" `
-                               -Message $_.Exception.Message `
-                               -LogFile $FullLogPath
+        Write-SpruceLog -Message $_.Exception.Message -Level "ERROR" -LogFile $FullTextLogPath -CsvFile $FullSummaryLogPath -Summary @{
+            AppName = $App.Name
+            Version = $null
+            Status  = "Error"
+            Path    = $null
+        }
     }
 }
 
-Write-Host "Sync Complete!" -ForegroundColor Green
+Write-SpruceLog -Message "Sync Complete!" -Level "INFO" -LogFile $FullTextLogPath
