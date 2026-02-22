@@ -1,7 +1,16 @@
-# Ignore everything by default
+# Explicitly ignore data and build artifacts
+Installers/
+Packages/
+Tools/*.exe
+*.log
+*.csv
+Thumbs.db
+.DS_Store
+
+# Ignore everything else by default
 /*
 
-# But allow these specific files/patterns
+# Allow specific project files
 !EvergreenLibrary.json
 !DeploymentConfig.json
 !Sync-Evergreen.ps1
@@ -10,19 +19,13 @@
 !Evergreen-Research.md
 !README.md
 !.gitignore
-!*.html
-!*.py
 !Scripts/
 !Scripts/*.ps1
 !conductor/
 !Tests/
-!Tools/
-
-# Keep folders but ignore contents
-!*/
-
-# Explicitly ignore common clutter
-Thumbs.db
-.DS_Store
-*.csv
-*.log
+!Tests/*.ps1
+!docs/
+!docs/*.md
+!PsApps/
+!PsApps/Temp/
+!PsApps/Temp/**
