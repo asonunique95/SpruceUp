@@ -13,9 +13,9 @@
     - [x] Implement Feature: Integrate `Write-SpruceLog` into the manual import process.
 - [x] **Task: Conductor - User Manual Verification 'Phase 2: Pipeline Refactoring' (Protocol in workflow.md)**
 
-## Phase 3: Documentation & Cleanup
+## Phase 3: Documentation & Cleanup [checkpoint: 4783402]
 - [x] **Task: Update README & Docs** 4e70e3f
     - [x] Implement Feature: Update documentation to reflect the new log file locations and formats.
 - [ ] **Task: Cleanup Old Scripts** (Deferred per user request)
     - [ ] Implement Chore: Remove `Scripts/Write-SyncLog.ps1` if it is no longer used.
-- [~] **Task: Conductor - User Manual Verification 'Phase 3: Documentation & Cleanup' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 3: Documentation & Cleanup' (Protocol in workflow.md)**
