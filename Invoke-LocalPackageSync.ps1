@@ -38,6 +38,19 @@ $ScriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 # 3. Setup Paths
 $BaseDataPath = if ([string]::IsNullOrWhiteSpace($DataPath)) { $LibraryPath } else { $DataPath }
 
+# Ensure DataPath exists or is a valid UNC path
+if (-not (Test-Path -Path $BaseDataPath)) {
+    try {
+        Write-Verbose "Creating data directory: $BaseDataPath"
+        New-Item -ItemType Directory -Path $BaseDataPath -Force | Out-Null
+    }
+    catch {
+        Write-Error "Failed to access or create DataPath at '$BaseDataPath'. Please ensure the path is valid and accessible."
+        return
+    }
+}
+$BaseDataPath = (Resolve-Path -Path $BaseDataPath).Path
+
 $FullDeployConfigPath = Join-Path $LibraryPath $DeployConfigFile
 $PackagesPath = Join-Path $BaseDataPath "Packages"
 $IntuneWinPath = Join-Path $PackagesPath "IntuneWin"
