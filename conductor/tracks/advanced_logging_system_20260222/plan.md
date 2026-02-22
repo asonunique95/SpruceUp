@@ -14,8 +14,8 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 2: Pipeline Refactoring' (Protocol in workflow.md)**
 
 ## Phase 3: Documentation & Cleanup
-- [ ] **Task: Update README & Docs**
-    - [ ] Implement Feature: Update documentation to reflect the new log file locations and formats.
-- [ ] **Task: Cleanup Old Scripts**
+- [x] **Task: Update README & Docs** 4e70e3f
+    - [x] Implement Feature: Update documentation to reflect the new log file locations and formats.
+- [ ] **Task: Cleanup Old Scripts** (Deferred per user request)
     - [ ] Implement Chore: Remove `Scripts/Write-SyncLog.ps1` if it is no longer used.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 3: Documentation & Cleanup' (Protocol in workflow.md)**
+- [~] **Task: Conductor - User Manual Verification 'Phase 3: Documentation & Cleanup' (Protocol in workflow.md)**
