@@ -68,6 +68,9 @@ Run the main synchronization script from an elevated PowerShell prompt:
 .\Invoke-EvergreenLibrarySync.ps1 -ConfigFile "MyApps.json" -LogFile "Sync.csv"
 ```
 
+### System Architecture
+For a visual overview of how the pipeline, manifests, and deployment configurations interact, see the **[System Workflow Diagram](docs/WORKFLOW_DIAGRAM.md)**.
+
 ### Script Parameters
 - `-LibraryPath`: The root directory for your application repository (Default: `C:\Evergreen`).
 - `-ConfigFile`: Path to your JSON manifest (Default: `EvergreenLibrary.json`).
