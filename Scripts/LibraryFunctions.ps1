@@ -143,39 +143,81 @@ function Sync-EvergreenLibraryApp {
     }
 }
 
-function Write-EvergreenSyncLog {
+function Write-SpruceLog {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        [string]$AppName,
-        [Parameter(Mandatory = $true)]
-        [string]$Status,
-        [Parameter(Mandatory = $true)]
         [string]$Message,
+
+        [Parameter(Mandatory = $false)]
         [string]$LogFile,
-        [string]$FileName = "N/A",
-        [double]$SizeMB = 0,
-        [string]$Path = "N/A"
+
+        [Parameter(Mandatory = $false)]
+        [string]$CsvFile,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateSet("INFO", "WARNING", "ERROR", "DEBUG")]
+        [string]$Level = "INFO",
+
+        [Parameter(Mandatory = $false)]
+        [string]$AppName,
+
+        [Parameter(Mandatory = $false)]
+        [hashtable]$Summary
     )
 
-    # Build log object
-    $LogEntry = [PSCustomObject]@{
-        Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-        AppName   = $AppName
-        Status    = $Status
-        FileName  = $FileName
-        SizeMB    = $SizeMB
-        Path      = $Path
-        Message   = $Message
+    $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $AppString = if ($AppName) { " [$AppName]" } else { "" }
+    $LogEntry = "[$Timestamp] [$Level]$AppString $Message"
+
+    # Write to console (Verbose/Normal based on level)
+    switch ($Level) {
+        "ERROR"   { Write-Error $Message }
+        "WARNING" { Write-Warning $Message }
+        "DEBUG"   { Write-Debug $Message }
+        Default   { Write-Verbose $Message }
     }
 
-    # Export to CSV
+    # Write to text log file
     if ($LogFile) {
-        if (Test-Path $LogFile) {
-            $LogEntry | Export-Csv -Path $LogFile -Append -NoTypeInformation
+        try {
+            $LogDir = Split-Path -Path $LogFile -Parent
+            if ($LogDir -and -not (Test-Path -Path $LogDir)) {
+                New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
+            }
+            $LogEntry | Out-File -FilePath $LogFile -Append -Encoding utf8 -ErrorAction Stop
         }
-        else {
-            $LogEntry | Export-Csv -Path $LogFile -NoTypeInformation
+        catch {
+            Write-Warning "Failed to write to log file '$LogFile': $($_.Exception.Message)"
+        }
+    }
+
+    # Write to CSV summary if provided
+    if ($CsvFile -and $Summary) {
+        try {
+            $CsvDir = Split-Path -Path $CsvFile -Parent
+            if ($CsvDir -and -not (Test-Path -Path $CsvDir)) {
+                New-Item -ItemType Directory -Path $CsvDir -Force | Out-Null
+            }
+
+            $Row = [PSCustomObject]@{
+                Timestamp = $Timestamp
+                AppName   = $Summary.AppName
+                Version   = $Summary.Version
+                Status    = $Summary.Status
+                Path      = $Summary.Path
+                Message   = $Message
+            }
+
+            if (Test-Path $CsvFile) {
+                $Row | Export-Csv -Path $CsvFile -Append -NoTypeInformation -Encoding utf8
+            }
+            else {
+                $Row | Export-Csv -Path $CsvFile -NoTypeInformation -Encoding utf8
+            }
+        }
+        catch {
+            Write-Warning "Failed to write to summary file '$CsvFile': $($_.Exception.Message)"
         }
     }
 }
