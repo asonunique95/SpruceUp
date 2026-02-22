@@ -13,6 +13,6 @@
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2: Pipeline Integration' (Protocol in workflow.md)**
 
 ## Phase 3: Configuration & Cleanup
-- [ ] **Task: Refactor DeploymentConfig.json**
-    - [ ] Implement Chore: Remove standard `UninstallCommand` entries for MSI-based applications.
+- [x] **Task: Refactor DeploymentConfig.json** 4417431
+    - [x] Implement Chore: Remove standard `UninstallCommand` entries for MSI-based applications. 4417431
 - [ ] **Task: Conductor - User Manual Verification 'Phase 3: Configuration & Cleanup' (Protocol in workflow.md)**
