@@ -21,7 +21,6 @@ Thumbs.db
 !.gitignore
 !Scripts/
 !Scripts/*.ps1
-!conductor/
 !Tests/
 !Tests/*.ps1
 !docs/
