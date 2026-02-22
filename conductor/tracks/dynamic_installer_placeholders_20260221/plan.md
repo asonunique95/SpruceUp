@@ -8,6 +8,6 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Core Logic Refactoring' (Protocol in workflow.md)**
 
 ## Phase 2: Documentation & Final Integration
-- [ ] **Task: Update Onboarding Guide**
-    - [ ] Implement Feature: Update `docs/ONBOARDING.md` to document the use of `{InstallerName}` in custom commands.
+- [x] **Task: Update Onboarding Guide** 73bf951
+    - [x] Implement Feature: Update `docs/ONBOARDING.md` to document the use of `{InstallerName}` in custom commands. 73bf951
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2: Documentation & Final Integration' (Protocol in workflow.md)**
