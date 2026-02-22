@@ -76,7 +76,7 @@ Run the script from the project root and provide the mandatory metadata and the 
 ```
 
 **Key Features:**
-- **Deployment Config Support:** If an entry for `MyCustomApp` exists in `DeploymentConfig.json`, the script will automatically use its custom commands and process lists.
+- **Automatic Configuration Creation:** If an entry for `MyCustomApp` does not exist in `DeploymentConfig.json`, the script will automatically create a default one for you. This allows you to easily customize its deployment for future updates.
 - **Full Pipeline Integration:** The script performs the PSADT staging, metadata injection, and `.intunewin` conversion in a single step.
 
 ---

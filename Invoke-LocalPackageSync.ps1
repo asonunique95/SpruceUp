@@ -45,7 +45,30 @@ foreach ($Path in @($PackagesPath, $IntuneWinPath)) {
 }
 
 # 5. Load Deployment Config
-$DeployConfig = if (Test-Path $FullDeployConfigPath) { Get-Content -Path $FullDeployConfigPath -Raw | ConvertFrom-Json } else { $null }
+$DeployConfig = if (Test-Path $FullDeployConfigPath) { Get-Content -Path $FullDeployConfigPath -Raw | ConvertFrom-Json } else { @{} }
+
+# 5.1 Create/Update entry if it doesn't exist
+if (-not $DeployConfig.$AppName) {
+    Write-Host "  -> Adding default entry to $DeployConfigFile..." -ForegroundColor Gray
+    
+    $InstallerName = Split-Path $SourcePath -Leaf
+    $Extension = [System.IO.Path]::GetExtension($InstallerName).ToLower()
+    
+    $DefaultInstall = if ($Extension -eq ".msi") {
+        'Start-ADTMsiProcess -FilePath "$PSScriptRoot\Files\{InstallerName}" -Action Install -Arguments "/qn /norestart"'
+    } else {
+        'Start-ADTProcess -FilePath "$PSScriptRoot\Files\{InstallerName}" -Arguments "/silent /norestart"'
+    }
+
+    $DeployConfig.$AppName = @{
+        Vendor = $Vendor
+        InstallCommand = $DefaultInstall
+        UninstallCommand = if ($Extension -eq ".msi") { 'Execute-MSI -Action Uninstall -Path "{ProductCode}"' } else { "" }
+        ProcessesToClose = @()
+    }
+
+    $DeployConfig | ConvertTo-Json -Depth 10 | Out-File -FilePath $FullDeployConfigPath -Encoding utf8 -Force
+}
 
 # 6. Process Packaging
 Write-Host "Manual Import: Starting packaging for $AppName v$Version ($Architecture)..." -ForegroundColor Cyan
