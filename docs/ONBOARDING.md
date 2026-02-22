@@ -69,7 +69,7 @@ For more advanced scenarios, you can customize the installation and uninstallati
 ```json
 "AppName": {
     "Vendor": "Publisher Name",
-    "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\installer.msi\" -Action Install",
+    "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\{InstallerName}\" -Action Install",
     "UninstallCommand": "Execute-MSI -Action Uninstall -Path \"{ProductCode}\"",
     "ProcessesToClose": ["process1", "process2"]
 }
@@ -78,6 +78,15 @@ For more advanced scenarios, you can customize the installation and uninstallati
 - **InstallCommand:** The full PowerShell command injected into the `Install` phase.
 - **UninstallCommand:** The full PowerShell command injected into the `Uninstall` phase.
 - **ProcessesToClose:** An array of process names (without .exe) to be terminated by the PSADT toolkit.
+
+### Dynamic Placeholders
+The following placeholders can be used in your commands and will be automatically replaced by the synchronization engine:
+
+| Placeholder | Description | Example |
+| :--- | :--- | :--- |
+| **`{InstallerName}`** | The filename of the retrieved installer (e.g., `GoogleChrome_121.0_x64.msi`). | `Start-ADTMsiProcess -FilePath "$PSScriptRoot\Files\{InstallerName}"` |
+| **`{ProductCode}`** | (Future) The MSI ProductCode of the installed application. | `Execute-MSI -Action Uninstall -Path "{ProductCode}"` |
+
 
 ---
 
