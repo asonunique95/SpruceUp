@@ -7,6 +7,9 @@ param (
     [string]$ConfigFile = "EvergreenLibrary.json",
 
     [Parameter(Mandatory = $false)]
+    [string]$DeployConfigFile = "DeploymentConfig.json",
+
+    [Parameter(Mandatory = $false)]
     [string]$LogFile = "EvergreenSyncLog.csv",
 
     [Parameter(Mandatory = $false)]
@@ -32,6 +35,7 @@ $ScriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
 # 2. Setup Paths
 $FullConfigPath = Join-Path $LibraryPath $ConfigFile
+$FullDeployConfigPath = Join-Path $LibraryPath $DeployConfigFile
 $FullLogPath = Join-Path $LibraryPath $LogFile
 $InstallersPath = Join-Path $LibraryPath "Installers"
 $PackagesPath = Join-Path $LibraryPath "Packages"
@@ -44,12 +48,13 @@ foreach ($Path in @($InstallersPath, $PackagesPath, $IntuneWinPath)) {
     }
 }
 
-# 4. Load Manifest
+# 4. Load Manifests
 try {
     $Apps = Get-EvergreenLibraryApps -Path $FullConfigPath
+    $DeployConfig = if (Test-Path $FullDeployConfigPath) { Get-Content -Path $FullDeployConfigPath -Raw | ConvertFrom-Json } else { $null }
 }
 catch {
-    Write-Error "Failed to load manifest: $($_.Exception.Message)"
+    Write-Error "Failed to load manifests: $($_.Exception.Message)"
     return
 }
 
@@ -88,11 +93,21 @@ foreach ($App in $Apps) {
                         $PackageName = Get-PSADTPackageName -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture
                         $PackageFolder = Join-Path $PackagesPath $PackageName
                         
+                        # Get app-specific config
+                        $AppDeploy = if ($DeployConfig -and $DeployConfig.$($App.Name)) { $DeployConfig.$($App.Name) } else { $null }
+                        $ProcList = if ($AppDeploy -and $AppDeploy.ProcessesToClose) { $AppDeploy.ProcessesToClose } else { @() }
+                        $CustomInstall = if ($AppDeploy -and $AppDeploy.InstallCommand) { $AppDeploy.InstallCommand } else { $null }
+                        $CustomUninstall = if ($AppDeploy -and $AppDeploy.UninstallCommand) { $AppDeploy.UninstallCommand } else { $null }
+
                         Copy-PSADTTemplate -DestinationPath $PackageFolder -Verbose:$VerbosePreference | Out-Null
                         Stage-PSADTInstaller -InstallerPath $SyncResult.Path -DestinationPackagePath $PackageFolder -Verbose:$VerbosePreference | Out-Null
-                        Set-PSADTAppHeader -PackagePath $PackageFolder -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture -Verbose:$VerbosePreference | Out-Null
-                        Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName (Split-Path $SyncResult.Path -Leaf) -Verbose:$VerbosePreference | Out-Null
+                        Set-PSADTAppHeader -PackagePath $PackageFolder -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture -ProcessesToClose $ProcList -Verbose:$VerbosePreference | Out-Null
+                        Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName (Split-Path $SyncResult.Path -Leaf) -CustomCommand $CustomInstall -Verbose:$VerbosePreference | Out-Null
                         
+                        if ($CustomUninstall) {
+                            Set-PSADTUninstallCommand -PackagePath $PackageFolder -CustomCommand $CustomUninstall -Verbose:$VerbosePreference | Out-Null
+                        }
+
                         Write-Host "Done." -ForegroundColor DarkGreen
                         $Message = "New version downloaded and PSADT package created: $PackageName"
 
