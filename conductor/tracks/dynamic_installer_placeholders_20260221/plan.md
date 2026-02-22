@@ -7,7 +7,7 @@
     - [x] Implement Feature: Refactor all `InstallCommand` entries in `DeploymentConfig.json` to use the `{InstallerName}` placeholder. 9a290ac
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Core Logic Refactoring' (Protocol in workflow.md)**
 
-## Phase 2: Documentation & Final Integration
+## Phase 2: Documentation & Final Integration [checkpoint: 2f61d00]
 - [x] **Task: Update Onboarding Guide** 73bf951
     - [x] Implement Feature: Update `docs/ONBOARDING.md` to document the use of `{InstallerName}` in custom commands. 73bf951
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2: Documentation & Final Integration' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 2: Documentation & Final Integration' (Protocol in workflow.md)**
