@@ -6,6 +6,7 @@
 !DeploymentConfig.json
 !Sync-Evergreen.ps1
 !Invoke-EvergreenLibrarySync.ps1
+!Invoke-LocalPackageSync.ps1
 !Evergreen-Research.md
 !README.md
 !.gitignore
