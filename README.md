@@ -14,7 +14,7 @@ Whether you're tracking hundreds of public apps or sideloading your own internal
 - **External Storage Support:** Redirect high-volume data (Installers, Packages) to external drives or SMB shares while keeping config files local.
 - **Structured Organization:** Organizes installers into a clean `Installers\<Publisher>\<Application>\<Channel>\<Version>\<Architecture>` hierarchy.
 - **Automated PSADT Wrapping:** Automatically stages a PSADT template for each download and injects correct metadata (Name, Vendor, Version) and install commands.
-- **Intune-Ready Preparation:** Converts generated PSADT packages into descriptive `.intunewin` files (e.g., `Google_Chrome_121.0.6167.140_x64.intunewin`).
+- **Intune-Ready Preparation:** Converts generated PSADT packages into descriptive `.intunewin` files (e.g., `Google_GoogleChrome_121.0.6167.140_x64.intunewin`).
 - **Resilient Execution:** Built-in retry logic with exponential backoff for network-related failures.
 - **Full Traceability:** Centralized CSV logging of all discovery, download, packaging, and conversion activities.
 
