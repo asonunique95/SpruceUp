@@ -37,7 +37,7 @@
   "VSCode": {
     "Vendor": "Microsoft",
     "InstallCommand": "Start-ADTProcess -FilePath \"$PSScriptRoot\\Files\\{InstallerName}\" -Arguments \"/VERYSILENT /NORESTART /MERGETASKS=!runcode\"",
-    "UninstallCommand": "Execute-Process -Path \"$envLocalAppData\\Programs\\Microsoft VS Code\\unins000.exe\" -Arguments \"/VERYSILENT\"",
+    "UninstallCommand": "Execute-Process -Path \"$envProgramFiles\\Microsoft VS Code\\unins000.exe\" -Arguments \"/VERYSILENT\"",
     "ProcessesToClose": [
       "Code"
     ]
