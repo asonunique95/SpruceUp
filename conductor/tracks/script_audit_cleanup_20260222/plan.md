@@ -11,6 +11,6 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Audit & Discovery' (Protocol in workflow.md)**
 
 ## Phase 2: User Review & Decision
-- [ ] **Task: Present Findings to User**
-    - [ ] Present the report and highlight scripts with no identified references.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2: User Review & Decision' (Protocol in workflow.md)**
+- [x] **Task: Present Findings to User**
+    - [x] Present the report and highlight scripts with no identified references.
+- [~] **Task: Conductor - User Manual Verification 'Phase 2: User Review & Decision' (Protocol in workflow.md)**
