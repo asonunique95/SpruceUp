@@ -7,9 +7,9 @@
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Core Logic Refactoring' (Protocol in workflow.md)**
 
 ## Phase 2: Pipeline Integration
-- [ ] **Task: Update Sync Scripts**
-    - [ ] Implement Feature: Update `Invoke-EvergreenLibrarySync.ps1` to pass the `-InstallerName` to `Set-PSADTUninstallCommand`.
-    - [ ] Implement Feature: Update `Invoke-LocalPackageSync.ps1` to pass the `-InstallerName` to `Set-PSADTUninstallCommand`.
+- [x] **Task: Update Sync Scripts** 83ee2a7
+    - [x] Implement Feature: Update `Invoke-EvergreenLibrarySync.ps1` to pass the `-InstallerName` to `Set-PSADTUninstallCommand`. 83ee2a7
+    - [x] Implement Feature: Update `Invoke-LocalPackageSync.ps1` to pass the `-InstallerName` to `Set-PSADTUninstallCommand`. 83ee2a7
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2: Pipeline Integration' (Protocol in workflow.md)**
 
 ## Phase 3: Configuration & Cleanup
