@@ -75,9 +75,13 @@ function Sync-EvergreenLibraryApp {
     }
 
     # 2. Build root folder for the application
-    # Use DataPath for storage if provided, otherwise fallback to LibraryPath
-    $BaseStoragePath = if ([string]::IsNullOrWhiteSpace($DataPath)) { $LibraryPath } else { $DataPath }
-    $AppRoot = Join-Path $BaseStoragePath "Installers"
+    # Use DataPath for storage if provided, otherwise fallback to LibraryPath/Installers
+    $AppRoot = if ([string]::IsNullOrWhiteSpace($DataPath)) { 
+        Join-Path $LibraryPath "Installers" 
+    } else { 
+        $DataPath 
+    }
+    
     $AppRoot = Join-Path $AppRoot $Publisher
     $AppRoot = Join-Path $AppRoot $AppName
 
