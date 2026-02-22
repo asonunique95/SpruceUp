@@ -152,7 +152,8 @@ function Set-PSADTInstallCommand {
 
     $InstallCommand = ""
     if (-not [string]::IsNullOrWhiteSpace($CustomCommand)) {
-        $InstallCommand = $CustomCommand
+        # Dynamically replace the {InstallerName} placeholder if it exists in the custom command
+        $InstallCommand = $CustomCommand -replace '\{InstallerName\}', $InstallerName
     } else {
         $Extension = [System.IO.Path]::GetExtension($InstallerName).ToLower()
         $InstallCommand = if ($Extension -eq ".msi") {
