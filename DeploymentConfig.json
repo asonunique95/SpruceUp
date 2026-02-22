@@ -59,23 +59,5 @@
     "ProcessesToClose": [
       "notepad++"
     ]
-  },
-  "ManualApp": {
-    "InstallCommand": "Start-ADTProcess -FilePath \"$PSScriptRoot\\Files\\{InstallerName}\" -Arguments \"/silent /norestart\"",
-    "Vendor": "ManualVendor",
-    "UninstallCommand": "",
-    "ProcessesToClose": []
-  },
-  "RemoteApp": {
-    "InstallCommand": "Start-ADTProcess -FilePath \"$PSScriptRoot\\Files\\{InstallerName}\" -Arguments \"/silent /norestart\"",
-    "Vendor": "RemoteVendor",
-    "UninstallCommand": "",
-    "ProcessesToClose": []
-  },
-  "ExternalApp": {
-    "ProcessesToClose": [],
-    "Vendor": "ExternalVendor",
-    "InstallCommand": "Start-ADTProcess -FilePath \"$PSScriptRoot\\Files\\{InstallerName}\" -Arguments \"/silent /norestart\"",
-    "UninstallCommand": ""
   }
 }

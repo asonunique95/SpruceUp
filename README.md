@@ -8,7 +8,7 @@ Whether you're tracking hundreds of public apps or sideloading your own internal
 
 ## 🚀 Key Features
 
-- **Automated Discovery:** Continuously monitors for new application versions using the `Evergreen` module.
+- **Automated Discovery:** Continuously monitors for new application versions using the `Evergreen` module. See the **[Full List of Supported Apps](docs/SUPPORTED_APPS.md)**.
 - **Smart Sync:** Only downloads new or missing installers, saving bandwidth and storage.
 - **Manual Sideloading:** Easily wrap local installers (not tracked by Evergreen) into the automated PSADT/IntuneWin pipeline.
 - **External Storage Support:** Redirect high-volume data (Installers, Packages) to external drives or SMB shares while keeping config files local.
