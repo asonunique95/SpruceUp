@@ -1,8 +1,10 @@
-# Evergreen Library Automation
+# 🌲 SpruceUp
 
-A comprehensive PowerShell-based pipeline to automate the retrieval, packaging, and preparation of enterprise application installers for Microsoft Intune.
+**Automated Evergreen App Lifecycle Management & Intune Preparation.**
 
-This tool leverages the [Evergreen](https://github.com/steve0hun/Evergreen) PowerShell module to ensure you always have the latest versions of common applications, wrapped in the industry-standard [PSAppDeployToolkit (PSADT)](https://psappdeploytoolkit.com/) and converted into `.intunewin` format.
+SpruceUp is a robust PowerShell-based pipeline designed to take the "mess" out of enterprise application management. It automatically scouts for fresh versions of your favorite apps using the [Evergreen](https://github.com/steve0hun/Evergreen) module, "spruces them up" by wrapping them in the industry-standard [PSAppDeployToolkit (PSADT)](https://psappdeploytoolkit.com/), and prepares them for immediate deployment via Microsoft Intune.
+
+Whether you're tracking hundreds of public apps or sideloading your own internal tools, SpruceUp ensures your repository stays fresh, organized, and ready for action.
 
 ## 🚀 Key Features
 
