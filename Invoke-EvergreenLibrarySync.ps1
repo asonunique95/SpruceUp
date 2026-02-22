@@ -7,6 +7,12 @@ param (
     [string]$DataPath,
 
     [Parameter(Mandatory = $false)]
+    [string]$InstallersPath,
+
+    [Parameter(Mandatory = $false)]
+    [string]$PackagesPath,
+
+    [Parameter(Mandatory = $false)]
     [string]$ConfigFile = "EvergreenLibrary.json",
 
     [Parameter(Mandatory = $false)]
@@ -37,32 +43,31 @@ $ScriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 . (Join-Path $ScriptPath "Scripts\IntuneWinFunctions.ps1")
 
 # 2. Setup Paths
-$BaseDataPath = if ([string]::IsNullOrWhiteSpace($DataPath)) { $LibraryPath } else { $DataPath }
-
-# Ensure DataPath exists or is a valid UNC path
-if (-not (Test-Path -Path $BaseDataPath)) {
-    try {
-        Write-Verbose "Creating data directory: $BaseDataPath"
-        New-Item -ItemType Directory -Path $BaseDataPath -Force | Out-Null
-    }
-    catch {
-        Write-Error "Failed to access or create DataPath at '$BaseDataPath'. Please ensure the path is valid and accessible."
-        return
-    }
-}
-$BaseDataPath = (Resolve-Path -Path $BaseDataPath).Path
-
+# Root config files always stay in the local LibraryPath
 $FullConfigPath = Join-Path $LibraryPath $ConfigFile
 $FullDeployConfigPath = Join-Path $LibraryPath $DeployConfigFile
 $FullLogPath = Join-Path $LibraryPath $LogFile
-$InstallersPath = Join-Path $BaseDataPath "Installers"
-$PackagesPath = Join-Path $BaseDataPath "Packages"
-$IntuneWinPath = Join-Path $PackagesPath "IntuneWin"
+
+# Heavy data locations: Order of precedence is: 
+# 1. Specific param (-InstallersPath / -PackagesPath)
+# 2. General data param (-DataPath)
+# 3. Default (LibraryPath)
+
+$FinalInstallersPath = if ($InstallersPath) { $InstallersPath } elseif ($DataPath) { Join-Path $DataPath "Installers" } else { Join-Path $LibraryPath "Installers" }
+$FinalPackagesPath = if ($PackagesPath) { $PackagesPath } elseif ($DataPath) { Join-Path $DataPath "Packages" } else { Join-Path $LibraryPath "Packages" }
+$FinalIntuneWinPath = Join-Path $FinalPackagesPath "IntuneWin"
 
 # 3. Ensure Directories Exist
-foreach ($Path in @($InstallersPath, $PackagesPath, $IntuneWinPath)) {
+foreach ($Path in @($FinalInstallersPath, $FinalPackagesPath, $FinalIntuneWinPath)) {
     if (-not (Test-Path -Path $Path)) {
-        New-Item -ItemType Directory -Path $Path -Force | Out-Null
+        try {
+            Write-Verbose "Creating directory: $Path"
+            New-Item -ItemType Directory -Path $Path -Force | Out-Null
+        }
+        catch {
+            Write-Error "Failed to create directory at '$Path'. If this is a network share, ensure you have provided the share name (e.g. \\homestor\Share) and have write permissions."
+            return
+        }
     }
 }
 
@@ -92,7 +97,7 @@ foreach ($App in $Apps) {
     Write-Host "Processing $($App.Name)... " -NoNewline
     
     try {
-        $SyncResult = Sync-EvergreenLibraryApp -AppConfig $App -LibraryPath $LibraryPath -DataPath $DataPath -Verbose:$VerbosePreference
+        $SyncResult = Sync-EvergreenLibraryApp -AppConfig $App -LibraryPath $LibraryPath -DataPath $FinalInstallersPath -Verbose:$VerbosePreference
 
         if ($null -ne $SyncResult) {
             if ($SyncResult.NewDownload) {
@@ -109,7 +114,7 @@ foreach ($App in $Apps) {
                     Write-Host "  -> Creating PSADT package... " -NoNewline
                     try {
                         $PackageName = Get-PSADTPackageName -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture
-                        $PackageFolder = Join-Path $PackagesPath $PackageName
+                        $PackageFolder = Join-Path $FinalPackagesPath $PackageName
                         
                         # Get app-specific config
                         $AppDeploy = if ($DeployConfig -and $DeployConfig.$($App.Name)) { $DeployConfig.$($App.Name) } else { $null }
@@ -138,7 +143,7 @@ foreach ($App in $Apps) {
                             try {
                                 $IntuneWinFile = New-IntuneWinPackage -SourceFolder $PackageFolder `
                                                                      -SetupFile "Invoke-AppDeployToolkit.exe" `
-                                                                     -OutputFolder $IntuneWinPath `
+                                                                     -OutputFolder $FinalIntuneWinPath `
                                                                      -OutputFileName $PackageName `
                                                                      -Verbose:$VerbosePreference
                                 

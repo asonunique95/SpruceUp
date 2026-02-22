@@ -22,6 +22,12 @@ param (
     [string]$DataPath,
 
     [Parameter(Mandatory = $false)]
+    [string]$InstallersPath,
+
+    [Parameter(Mandatory = $false)]
+    [string]$PackagesPath,
+
+    [Parameter(Mandatory = $false)]
     [string]$DeployConfigFile = "DeploymentConfig.json"
 )
 
@@ -36,29 +42,22 @@ $ScriptPath = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 . (Join-Path $ScriptPath "Scripts\IntuneWinFunctions.ps1")
 
 # 3. Setup Paths
-$BaseDataPath = if ([string]::IsNullOrWhiteSpace($DataPath)) { $LibraryPath } else { $DataPath }
-
-# Ensure DataPath exists or is a valid UNC path
-if (-not (Test-Path -Path $BaseDataPath)) {
-    try {
-        Write-Verbose "Creating data directory: $BaseDataPath"
-        New-Item -ItemType Directory -Path $BaseDataPath -Force | Out-Null
-    }
-    catch {
-        Write-Error "Failed to access or create DataPath at '$BaseDataPath'. Please ensure the path is valid and accessible."
-        return
-    }
-}
-$BaseDataPath = (Resolve-Path -Path $BaseDataPath).Path
-
 $FullDeployConfigPath = Join-Path $LibraryPath $DeployConfigFile
-$PackagesPath = Join-Path $BaseDataPath "Packages"
-$IntuneWinPath = Join-Path $PackagesPath "IntuneWin"
+
+$FinalPackagesPath = if ($PackagesPath) { $PackagesPath } elseif ($DataPath) { Join-Path $DataPath "Packages" } else { Join-Path $LibraryPath "Packages" }
+$FinalIntuneWinPath = Join-Path $FinalPackagesPath "IntuneWin"
 
 # 4. Ensure Directories Exist
-foreach ($Path in @($PackagesPath, $IntuneWinPath)) {
+foreach ($Path in @($FinalPackagesPath, $FinalIntuneWinPath)) {
     if (-not (Test-Path -Path $Path)) {
-        New-Item -ItemType Directory -Path $Path -Force | Out-Null
+        try {
+            Write-Verbose "Creating directory: $Path"
+            New-Item -ItemType Directory -Path $Path -Force | Out-Null
+        }
+        catch {
+            Write-Error "Failed to create directory at '$Path'. If this is a network share, ensure you have provided the share name (e.g. \\homestor\Share) and have write permissions."
+            return
+        }
     }
 }
 
@@ -98,7 +97,7 @@ Write-Host "Manual Import: Starting packaging for $AppName v$Version ($Architect
 
 try {
     $PackageName = Get-PSADTPackageName -Vendor $Vendor -AppName $AppName -Version $Version -Arch $Architecture
-    $PackageFolder = Join-Path $PackagesPath $PackageName
+    $PackageFolder = Join-Path $FinalPackagesPath $PackageName
     
     # Get app-specific config
     $AppDeploy = if ($DeployConfig -and $DeployConfig.$($AppName)) { $DeployConfig.$($AppName) } else { $null }
@@ -121,7 +120,7 @@ try {
     Write-Host "  -> Converting to .intunewin... " -NoNewline
     $IntuneWinFile = New-IntuneWinPackage -SourceFolder $PackageFolder `
                                          -SetupFile "Invoke-AppDeployToolkit.exe" `
-                                         -OutputFolder $IntuneWinPath `
+                                         -OutputFolder $FinalIntuneWinPath `
                                          -OutputFileName $PackageName
     
     if ($IntuneWinFile) {
