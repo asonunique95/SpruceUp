@@ -10,7 +10,7 @@
     - [x] Compile findings into a markdown report (`docs/SCRIPT_AUDIT_REPORT.md`).
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Audit & Discovery' (Protocol in workflow.md)**
 
-## Phase 2: User Review & Decision
+## Phase 2: User Review & Decision [checkpoint: f6e8723]
 - [x] **Task: Present Findings to User**
     - [x] Present the report and highlight scripts with no identified references.
-- [~] **Task: Conductor - User Manual Verification 'Phase 2: User Review & Decision' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 2: User Review & Decision' (Protocol in workflow.md)**
