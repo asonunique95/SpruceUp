@@ -61,6 +61,26 @@ Finally, use `Add-EvergreenLibraryApp.ps1` to register the application. It autom
 
 ---
 
+## Manual Application Import (Sideloading)
+
+If you have an application that is not tracked by the Evergreen module (e.g., an internal line-of-business app), you can "sideload" it into the pipeline using `Invoke-LocalPackageSync.ps1`. This allows you to leverage the same PSADT wrapping and IntuneWin conversion logic used for automated apps.
+
+### Usage
+Run the script from the project root and provide the mandatory metadata and the path to your installer:
+
+```powershell
+.\Invoke-LocalPackageSync.ps1 -AppName "MyCustomApp" `
+                             -Vendor "InternalIT" `
+                             -Version "2.1.0" `
+                             -SourcePath "C:\Downloads\setup.exe"
+```
+
+**Key Features:**
+- **Deployment Config Support:** If an entry for `MyCustomApp` exists in `DeploymentConfig.json`, the script will automatically use its custom commands and process lists.
+- **Full Pipeline Integration:** The script performs the PSADT staging, metadata injection, and `.intunewin` conversion in a single step.
+
+---
+
 ## Customizing Deployment
 
 For more advanced scenarios, you can customize the installation and uninstallation logic by editing `DeploymentConfig.json`. This file allows you to specify custom PSADT commands and a list of processes that should be closed before installation.
