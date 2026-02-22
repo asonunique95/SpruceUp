@@ -8,11 +8,11 @@
     - [x] Implement Feature: Create `Set-PSADTUninstallCommand` in `Scripts/PSADTFunctions.ps1` to inject custom uninstallation logic. a735d91
 - [x] **Task: Conductor - User Manual Verification 'Phase 1: Core Configuration & Library Updates' (Protocol in workflow.md)** 0307ab4
 
-## Phase 2: Pipeline Integration & Refactoring
-- [ ] **Task: Update Main Sync Script to load Deployment Config**
-    - [ ] Implement Feature: Update `Invoke-EvergreenLibrarySync.ps1` to load `DeploymentConfig.json`.
-    - [ ] Implement Feature: Pass app-specific commands and process lists to the packaging functions.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2: Pipeline Integration & Refactoring' (Protocol in workflow.md)**
+## Phase 2: Pipeline Integration & Refactoring [checkpoint: 3191359]
+- [x] **Task: Update Main Sync Script to load Deployment Config** 32c1843
+    - [x] Implement Feature: Update `Invoke-EvergreenLibrarySync.ps1` to load `DeploymentConfig.json`. 32c1843
+    - [x] Implement Feature: Pass app-specific commands and process lists to the packaging functions. 32c1843
+- [x] **Task: Conductor - User Manual Verification 'Phase 2: Pipeline Integration & Refactoring' (Protocol in workflow.md)** 3191359
 
 ## Phase 3: Documentation & Expansion
 - [ ] **Task: Update Onboarding Guide**
