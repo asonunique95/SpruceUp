@@ -45,7 +45,12 @@ foreach ($Path in @($PackagesPath, $IntuneWinPath)) {
 }
 
 # 5. Load Deployment Config
-$DeployConfig = if (Test-Path $FullDeployConfigPath) { Get-Content -Path $FullDeployConfigPath -Raw | ConvertFrom-Json } else { @{} }
+# We use -AsHashtable to allow dynamic property addition
+$DeployConfig = if (Test-Path $FullDeployConfigPath) { 
+    Get-Content -Path $FullDeployConfigPath -Raw | ConvertFrom-Json -AsHashtable 
+} else { 
+    @{} 
+}
 
 # 5.1 Create/Update entry if it doesn't exist
 if (-not $DeployConfig.$AppName) {
