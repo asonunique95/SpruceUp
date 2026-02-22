@@ -27,14 +27,14 @@ $Placeholder
     }
 
     It "Replaces {InstallerName} placeholder in CustomCommand with actual InstallerName" {
-        $CustomCommand = 'Start-ADTProcess -FilePath "$PSScriptRoot\Files\{InstallerName}" -Arguments "/S"'
+        $CustomCommand = 'Start-ADTProcess -FilePath "$PSScriptRoot\Files\{InstallerName}" -ArgumentList "/S"'
         $InstallerName = "MyInstaller_v1.0.exe"
         
         $Result = Set-PSADTInstallCommand -PackagePath $TempPath -InstallerName $InstallerName -CustomCommand $CustomCommand
         
         $Result | Should -Be $true
         $UpdatedContent = Get-Content -Path $ScriptFile -Raw
-        $ExpectedCommand = "`tStart-ADTProcess -FilePath "`$PSScriptRoot\Files\MyInstaller_v1.0.exe" -Arguments "/S""
+        $ExpectedCommand = "`tStart-ADTProcess -FilePath "`$PSScriptRoot\Files\MyInstaller_v1.0.exe" -ArgumentList "/S""
         $UpdatedContent | Should -Contain $ExpectedCommand
     }
 
@@ -56,7 +56,7 @@ $Placeholder
         
         $Result | Should -Be $true
         $UpdatedContent = Get-Content -Path $ScriptFile -Raw
-        $ExpectedCommand = "`tStart-ADTProcess -FilePath "`$PSScriptRoot\Files\App.exe" -Arguments "/silent /norestart""
+        $ExpectedCommand = "`tStart-ADTProcess -FilePath "`$PSScriptRoot\Files\App.exe" -ArgumentList "/silent /norestart""
         $UpdatedContent | Should -Contain $ExpectedCommand
     }
 }

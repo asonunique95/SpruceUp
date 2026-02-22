@@ -157,9 +157,9 @@ function Set-PSADTInstallCommand {
     } else {
         $Extension = [System.IO.Path]::GetExtension($InstallerName).ToLower()
         $InstallCommand = if ($Extension -eq ".msi") {
-            'Start-ADTMsiProcess -FilePath "$PSScriptRoot\Files\{0}" -Action Install' -f $InstallerName
+            'Start-ADTMsiProcess -FilePath "$PSScriptRoot\Files\{0}" -Action Install -ArgumentList "/qn /norestart"' -f $InstallerName
         } else {
-            'Start-ADTProcess -FilePath "$PSScriptRoot\Files\{0}" -Arguments "/silent /norestart"' -f $InstallerName
+            'Start-ADTProcess -FilePath "$PSScriptRoot\Files\{0}" -ArgumentList "/silent /norestart"' -f $InstallerName
         }
     }
 
