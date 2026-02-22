@@ -19,7 +19,8 @@ function Get-IntuneWinAppUtilPath {
         return $FromPath.Source
     }
 
-    Write-Error "IntuneWinAppUtil.exe not found at '$ToolPath' or in system PATH."
+    $DownloadUrl = "https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool"
+    Write-Error "IntuneWinAppUtil.exe not found. Please download it from $DownloadUrl and place it in the 'Tools\' folder, or add it to your system PATH."
     return $null
 }
 
