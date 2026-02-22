@@ -32,7 +32,10 @@ catch {
     }
 }
 
-if (-not $Apps) {
+# Ensure $Apps is an array for consistent handling of .Count and indexing
+if ($null -ne $Apps) { $Apps = @($Apps) }
+
+if (-not $Apps -or $Apps.Count -eq 0) {
     Write-Warning "No applications found matching '$Name' in the Evergreen module."
     Write-Host "Try a broader search term or check the available apps at https://steve0hun.github.io/Evergreen/apps/" -ForegroundColor Gray
     return
@@ -43,8 +46,8 @@ Write-Host "`nMatches found in Evergreen:" -ForegroundColor Cyan
 $Apps | Select-Object Name, Description | Format-Table -AutoSize
 
 # 4. If a single match is found, show detailed metadata schema
-if ($Apps.Count -eq 1 -or ($null -ne $Apps -and $Apps.GetType().Name -notlike "*[]")) {
-    $AppName = if ($Apps.Count -eq 1) { $Apps[0].Name } else { $Apps.Name }
+if ($Apps.Count -eq 1) {
+    $AppName = $Apps[0].Name
     
     Write-Host "`nRetrieving detailed metadata for '$AppName' to show available filters..." -ForegroundColor Cyan
     try {
