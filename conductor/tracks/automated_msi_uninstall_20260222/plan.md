@@ -1,9 +1,9 @@
 # Implementation Plan - Automated MSI Uninstallation Logic
 
 ## Phase 1: Core Logic Refactoring
-- [ ] **Task: Update Set-PSADTUninstallCommand Helper**
-    - [ ] Write Unit Test: Add tests to `Tests/PSADTFunctions.Tests.ps1` to verify automated MSI and EXE uninstall string generation.
-    - [ ] Implement Refactor: Update `Set-PSADTUninstallCommand` in `Scripts/PSADTFunctions.ps1` to accept `-InstallerName` and implement the automated logic.
+- [x] **Task: Update Set-PSADTUninstallCommand Helper** e02e26a
+    - [x] Write Unit Test: Add tests to `Tests/PSADTFunctions.Tests.ps1` to verify automated MSI and EXE uninstall string generation. e02e26a
+    - [x] Implement Refactor: Update `Set-PSADTUninstallCommand` in `Scripts/PSADTFunctions.ps1` to accept `-InstallerName` and implement the automated logic. e02e26a
 - [ ] **Task: Conductor - User Manual Verification 'Phase 1: Core Logic Refactoring' (Protocol in workflow.md)**
 
 ## Phase 2: Pipeline Integration
