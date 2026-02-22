@@ -119,6 +119,28 @@ By default, the sync script performs the full end-to-end process. You can use th
 
 ---
 
+## External Storage & SMB Shares
+
+By default, all installers and packages are stored in the `Installers/` and `Packages/` folders within your library path (e.g., `C:\Evergreen`). If you are running out of local space, you can redirect these "heavy" data folders to an external drive or a network share using the `-DataPath` parameter.
+
+The configuration files (`EvergreenLibrary.json`, `DeploymentConfig.json`) will always remain in your local `-LibraryPath`, but the actual data will be moved.
+
+### Redirection Examples
+
+**External Drive:**
+```powershell
+.\Invoke-EvergreenLibrarySync.ps1 -DataPath "X:\EvergreenData"
+```
+
+**Network Share (UNC):**
+```powershell
+.\Invoke-EvergreenLibrarySync.ps1 -DataPath "\\homestor\Software\Evergreen"
+```
+
+*Note: The script will automatically create the necessary `Installers/` and `Packages/` subdirectories at the destination if they do not exist.*
+
+---
+
 ## Common Filter Examples
 
 | Scenario | Filter Pattern |
