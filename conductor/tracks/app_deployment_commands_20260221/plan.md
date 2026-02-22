@@ -1,12 +1,12 @@
 # Implementation Plan - App-Specific Deployment Commands
 
 ## Phase 1: Core Configuration & Library Updates
-- [ ] **Task: Define and Update DeploymentConfig.json Schema**
-    - [ ] Implement Feature: Update `DeploymentConfig.json` with sample `InstallCommand` and `UninstallCommand` entries for at least one app (e.g., 7Zip).
-- [ ] **Task: Update PSADT Functions for Custom Commands**
-    - [ ] Implement Feature: Refactor `Set-PSADTInstallCommand` in `Scripts/PSADTFunctions.ps1` to accept an optional `CustomCommand`.
-    - [ ] Implement Feature: Create `Set-PSADTUninstallCommand` in `Scripts/PSADTFunctions.ps1` to inject custom uninstallation logic.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1: Core Configuration & Library Updates' (Protocol in workflow.md)**
+- [x] **Task: Define and Update DeploymentConfig.json Schema** 8ebb86b
+    - [x] Implement Feature: Update `DeploymentConfig.json` with sample `InstallCommand` and `UninstallCommand` entries for at least one app (e.g., 7Zip). 8ebb86b
+- [x] **Task: Update PSADT Functions for Custom Commands** a735d91
+    - [x] Implement Feature: Refactor `Set-PSADTInstallCommand` in `Scripts/PSADTFunctions.ps1` to accept an optional `CustomCommand`. a735d91
+    - [x] Implement Feature: Create `Set-PSADTUninstallCommand` in `Scripts/PSADTFunctions.ps1` to inject custom uninstallation logic. a735d91
+- [~] **Task: Conductor - User Manual Verification 'Phase 1: Core Configuration & Library Updates' (Protocol in workflow.md)**
 
 ## Phase 2: Pipeline Integration & Refactoring
 - [ ] **Task: Update Main Sync Script to load Deployment Config**
