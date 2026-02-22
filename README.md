@@ -69,7 +69,7 @@ Run the main synchronization script from an elevated PowerShell prompt:
 .\Invoke-EvergreenLibrarySync.ps1 -AppName "7Zip" -Verbose
 
 # Specify custom config and log locations
-.\Invoke-EvergreenLibrarySync.ps1 -ConfigFile "MyApps.json" -LogFile "Sync.csv"
+.\Invoke-EvergreenLibrarySync.ps1 -ConfigFile "MyApps.json" -TextLog "MyLog.log" -SummaryLog "MySummary.csv"
 
 # Sync to an external drive or SMB share
 .\Invoke-EvergreenLibrarySync.ps1 -DataPath "X:\EvergreenData"
@@ -94,7 +94,8 @@ For a visual overview of how the pipeline, manifests, and deployment configurati
 - `-InstallersPath`: (Optional) Explicit override for the Installers directory.
 - `-PackagesPath`: (Optional) Explicit override for the Packages directory.
 - `-ConfigFile`: Path to your JSON manifest (Default: `EvergreenLibrary.json`).
-- `-LogFile`: Path to the CSV log file (Default: `EvergreenSyncLog.csv`).
+- `-TextLog`: Path to the detailed text log (Default: `SpruceUp.log`).
+- `-SummaryLog`: Path to the CSV summary log (Default: `SyncSummary.csv`).
 - `-AppName`: (Optional) Limit the sync to a single application by name.
 - `-StopAtPhase`: (Optional) Stop the pipeline after a specific phase. Valid values: `Download`, `PSADT`, `IntuneWin` (Default).
 
@@ -117,12 +118,16 @@ For a visual overview of how the pipeline, manifests, and deployment configurati
 
 ## 📝 Logging & Monitoring
 
-All activities are recorded in `EvergreenSyncLog.csv`. This log includes:
-- **Timestamp:** When the action occurred.
-- **AppName:** The name of the application processed.
-- **Status:** Success, Skipped (if already up to date), or Error.
-- **Message:** Detailed outcome, including generated package names or error details.
-- **Path:** Full path to the retrieved installer or generated package.
+All activities are recorded in two locations:
+
+1.  **`SpruceUp.log`**: A detailed text log containing all operations, status messages, and errors.
+2.  **`SyncSummary.csv`**: A structured summary of all processed applications, including:
+    - **Timestamp:** When the action occurred.
+    - **AppName:** The name of the application processed.
+    - **Version:** The version of the application.
+    - **Status:** Success, Skipped (if already up to date), or Error.
+    - **Path:** Full path to the retrieved installer or generated package.
+    - **Message:** Detailed outcome.
 
 ## ⚖️ License
 This project is provided "as-is" for automation research and foundation. Always test generated packages in a lab environment before deploying to production.
