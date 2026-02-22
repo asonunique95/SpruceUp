@@ -1,37 +1,44 @@
 {
     "MicrosoftEdge": {
         "Vendor": "Microsoft",
-        "InstallArguments": "/qn /norestart",
+        "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\MicrosoftEdgeEnterpriseX64.msi\" -Action Install -Arguments \"/qn /norestart\"",
+        "UninstallCommand": "Execute-MSI -Action Uninstall -Path \"{ProductCode}\"",
         "ProcessesToClose": ["msedge"]
     },
     "GoogleChrome": {
         "Vendor": "Google",
-        "InstallArguments": "/qn /norestart",
+        "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\googlechromestandaloneenterprise64.msi\" -Action Install -Arguments \"/qn /norestart\"",
+        "UninstallCommand": "Execute-MSI -Action Uninstall -Path \"{ProductCode}\"",
         "ProcessesToClose": ["chrome"]
     },
     "7Zip": {
         "Vendor": "Igor Pavlov",
-        "InstallArguments": "/qn /norestart",
+        "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\7z2600-x64.msi\" -Action Install -Arguments \"/qn /norestart\"",
+        "UninstallCommand": "Execute-MSI -Action Uninstall -Path \"{ProductCode}\"",
         "ProcessesToClose": ["7zFM", "7zG"]
     },
     "Git": {
         "Vendor": "Git Team",
-        "InstallArguments": "/VERYSILENT /NORESTART /NOCANCEL /LOADINF=git_options.ini",
+        "InstallCommand": "Start-ADTProcess -FilePath \"$PSScriptRoot\\Files\\Git-2.44.0-64-bit.exe\" -Arguments \"/VERYSILENT /NORESTART /NOCANCEL /LOADINF=git_options.ini\"",
+        "UninstallCommand": "Execute-Process -Path \"$envProgramFiles\\Git\\unins000.exe\" -Arguments \"/VERYSILENT\"",
         "ProcessesToClose": ["git", "git-bash", "git-gui"]
     },
     "VSCode": {
         "Vendor": "Microsoft",
-        "InstallArguments": "/VERYSILENT /NORESTART /MERGETASKS=!runcode",
+        "InstallCommand": "Start-ADTProcess -FilePath \"$PSScriptRoot\\Files\\VSCodeUserSetup-x64-1.87.2.exe\" -Arguments \"/VERYSILENT /NORESTART /MERGETASKS=!runcode\"",
+        "UninstallCommand": "Execute-Process -Path \"$envLocalAppData\\Programs\\Microsoft VS Code\\unins000.exe\" -Arguments \"/VERYSILENT\"",
         "ProcessesToClose": ["Code"]
     },
     "PuTTY": {
         "Vendor": "Simon Tatham",
-        "InstallArguments": "/qn /norestart",
+        "InstallCommand": "Start-ADTMsiProcess -FilePath \"$PSScriptRoot\\Files\\putty-64bit-0.81-installer.msi\" -Action Install -Arguments \"/qn /norestart\"",
+        "UninstallCommand": "Execute-MSI -Action Uninstall -Path \"{ProductCode}\"",
         "ProcessesToClose": ["putty", "pageant", "pscp"]
     },
     "NotepadPlusPlus": {
         "Vendor": "Notepad++ Team",
-        "InstallArguments": "/S",
+        "InstallCommand": "Start-ADTProcess -FilePath \"$PSScriptRoot\\Files\\npp.8.6.4.Installer.x64.exe\" -Arguments \"/S\"",
+        "UninstallCommand": "Execute-Process -Path \"$envProgramFiles\\Notepad++\\uninstall.exe\" -Arguments \"/S\"",
         "ProcessesToClose": ["notepad++"]
     }
 }
