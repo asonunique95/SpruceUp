@@ -16,17 +16,20 @@ Write-Verbose "Searching for '$Name' in Evergreen module..."
 $Apps = $null
 
 try {
-    # Attempt 1: Wildcard search
-    $Apps = Find-EvergreenApp -Name "*$Name*" -ErrorAction SilentlyContinue
-    
-    # Attempt 2: If no results, try literal search
-    if (-not $Apps) {
-        $Apps = Find-EvergreenApp -Name $Name -ErrorAction SilentlyContinue
-    }
+    # The Evergreen module handles partial matches (often via Regex)
+    # Adding manual glob wildcards (*) causes errors in recent versions
+    $Apps = Find-EvergreenApp -Name $Name -ErrorAction Stop
 }
 catch {
-    Write-Error "An error occurred while searching for '$Name': $($_.Exception.Message)"
-    return
+    # If a regex error occurs, try escaping the search term
+    try {
+        $EscapedName = [regex]::Escape($Name)
+        $Apps = Find-EvergreenApp -Name $EscapedName -ErrorAction SilentlyContinue
+    }
+    catch {
+        Write-Error "An error occurred while searching for '$Name': $($_.Exception.Message)"
+        return
+    }
 }
 
 if (-not $Apps) {
