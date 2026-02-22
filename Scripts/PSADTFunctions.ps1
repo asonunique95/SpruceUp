@@ -137,7 +137,9 @@ function Set-PSADTInstallCommand {
         [Parameter(Mandatory = $true)]
         [string]$PackagePath,
         [Parameter(Mandatory = $true)]
-        [string]$InstallerName
+        [string]$InstallerName,
+        [Parameter(Mandatory = $false)]
+        [string]$CustomCommand
     )
 
     $ScriptFile = Join-Path $PackagePath "Invoke-AppDeployToolkit.ps1"
@@ -148,20 +150,23 @@ function Set-PSADTInstallCommand {
 
     $Content = Get-Content -Path $ScriptFile -Raw
 
-    $Extension = [System.IO.Path]::GetExtension($InstallerName).ToLower()
-    
-    $InstallCommand = if ($Extension -eq ".msi") {
-        'Start-ADTMsiProcess -FilePath "$PSScriptRoot\Files\{0}" -Action Install' -f $InstallerName
+    $InstallCommand = ""
+    if (-not [string]::IsNullOrWhiteSpace($CustomCommand)) {
+        $InstallCommand = $CustomCommand
     } else {
-        'Start-ADTProcess -FilePath "$PSScriptRoot\Files\{0}" -Arguments "/silent /norestart"' -f $InstallerName
+        $Extension = [System.IO.Path]::GetExtension($InstallerName).ToLower()
+        $InstallCommand = if ($Extension -eq ".msi") {
+            'Start-ADTMsiProcess -FilePath "$PSScriptRoot\Files\{0}" -Action Install' -f $InstallerName
+        } else {
+            'Start-ADTProcess -FilePath "$PSScriptRoot\Files\{0}" -Arguments "/silent /norestart"' -f $InstallerName
+        }
     }
 
-    Write-Verbose "Injecting install command for '$InstallerName' into '$ScriptFile'..."
+    Write-Verbose "Injecting install command into '$ScriptFile'..."
     
     $Placeholder = "## <Perform Installation tasks here>"
     $NewContent = "`t$InstallCommand"
     
-    # We use regex to replace the placeholder
     $Content = $Content -replace [regex]::Escape($Placeholder), $NewContent
 
     try {
@@ -170,6 +175,40 @@ function Set-PSADTInstallCommand {
     }
     catch {
         Write-Error "Failed to write updated PSADT script with install command: $($_.Exception.Message)"
+        return $false
+    }
+}
+
+function Set-PSADTUninstallCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$PackagePath,
+        [Parameter(Mandatory = $true)]
+        [string]$CustomCommand
+    )
+
+    $ScriptFile = Join-Path $PackagePath "Invoke-AppDeployToolkit.ps1"
+    if (-not (Test-Path $ScriptFile)) {
+        Write-Error "PSADT Script not found at '$ScriptFile'."
+        return $false
+    }
+
+    $Content = Get-Content -Path $ScriptFile -Raw
+
+    Write-Verbose "Injecting uninstall command into '$ScriptFile'..."
+    
+    $Placeholder = "## <Perform Uninstallation tasks here>"
+    $NewContent = "`t$CustomCommand"
+    
+    $Content = $Content -replace [regex]::Escape($Placeholder), $NewContent
+
+    try {
+        $Content | Out-File -FilePath $ScriptFile -Encoding utf8 -Force -ErrorAction Stop
+        return $true
+    }
+    catch {
+        Write-Error "Failed to write updated PSADT script with uninstall command: $($_.Exception.Message)"
         return $false
     }
 }
