@@ -85,7 +85,7 @@ if (-not $DeployConfig.$AppName) {
     $DeployConfig.$AppName = @{
         Vendor = $Vendor
         InstallCommand = $DefaultInstall
-        UninstallCommand = if ($Extension -eq ".msi") { 'Execute-MSI -Action Uninstall -Path "{ProductCode}"' } else { "" }
+        UninstallCommand = ""
         ProcessesToClose = @()
     }
 
@@ -109,11 +109,11 @@ try {
     Copy-PSADTTemplate -DestinationPath $PackageFolder | Out-Null
     Stage-PSADTInstaller -InstallerPath $SourcePath -DestinationPackagePath $PackageFolder | Out-Null
     Set-PSADTAppHeader -PackagePath $PackageFolder -Vendor $Vendor -AppName $AppName -Version $Version -Arch $Architecture -ProcessesToClose $ProcList | Out-Null
-    Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName (Split-Path $SourcePath -Leaf) -CustomCommand $CustomInstall | Out-Null
     
-    if ($CustomUninstall) {
-        Set-PSADTUninstallCommand -PackagePath $PackageFolder -CustomCommand $CustomUninstall | Out-Null
-    }
+    $InstallerFileName = Split-Path $SourcePath -Leaf
+    Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName $InstallerFileName -CustomCommand $CustomInstall | Out-Null
+    Set-PSADTUninstallCommand -PackagePath $PackageFolder -InstallerName $InstallerFileName -CustomCommand $CustomUninstall | Out-Null
+    
     Write-Host "Done." -ForegroundColor DarkGreen
 
     # --- INTUNEWIN CONVERSION ---

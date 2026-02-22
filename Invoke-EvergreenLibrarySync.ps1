@@ -125,11 +125,9 @@ foreach ($App in $Apps) {
                         Copy-PSADTTemplate -DestinationPath $PackageFolder -Verbose:$VerbosePreference | Out-Null
                         Stage-PSADTInstaller -InstallerPath $SyncResult.Path -DestinationPackagePath $PackageFolder -Verbose:$VerbosePreference | Out-Null
                         Set-PSADTAppHeader -PackagePath $PackageFolder -Vendor $App.Vendor -AppName $App.Name -Version $SyncResult.Version -Arch $SyncResult.Architecture -ProcessesToClose $ProcList -Verbose:$VerbosePreference | Out-Null
-                        Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName (Split-Path $SyncResult.Path -Leaf) -CustomCommand $CustomInstall -Verbose:$VerbosePreference | Out-Null
-                        
-                        if ($CustomUninstall) {
-                            Set-PSADTUninstallCommand -PackagePath $PackageFolder -CustomCommand $CustomUninstall -Verbose:$VerbosePreference | Out-Null
-                        }
+                        $InstallerFileName = Split-Path $SyncResult.Path -Leaf
+                        Set-PSADTInstallCommand -PackagePath $PackageFolder -InstallerName $InstallerFileName -CustomCommand $CustomInstall -Verbose:$VerbosePreference | Out-Null
+                        Set-PSADTUninstallCommand -PackagePath $PackageFolder -InstallerName $InstallerFileName -CustomCommand $CustomUninstall -Verbose:$VerbosePreference | Out-Null
 
                         Write-Host "Done." -ForegroundColor DarkGreen
                         $Message = "New version downloaded and PSADT package created: $PackageName"
